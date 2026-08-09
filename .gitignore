@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.local
+
+# Dependencies / build
+node_modules/
+dist/
+build/
+.venv/
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Large / generated
+*.glb
+*.gltf
+*.fbx
+data/embeddings.json
+web/public/models/

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.body-pain-3d/body-pain-map.schema.json",
+  "title": "BodyPainMap",
+  "type": "object",
+  "required": ["version", "regions"],
+  "properties": {
+    "version": { "type": "string" },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name_th", "aliases"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$",
+            "description": "Stable region id used by UI click + text resolver"
+          },
+          "name_th": { "type": "string" },
+          "name_en": { "type": "string" },
+          "side": {
+            "type": "string",
+            "enum": ["left", "right", "midline", "bilateral", "na"]
+          },
+          "surface": {
+            "type": "string",
+            "enum": ["anterior", "posterior", "lateral", "any"]
+          },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Thai/English phrases patients may type"
+          },
+          "wiki_refs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Concept note names in local body-xambrain vault"
+          },
+          "sen_refs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "patient_blurb_th": {
+            "type": "string",
+            "description": "Short non-diagnostic explanation for patients"
+          }
+        }
+      }
+    }
+  }
+}
