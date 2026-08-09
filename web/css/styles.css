@@ -215,6 +215,25 @@ body.role-patient .learner-only {
   font-size: 0.9rem;
 }
 
+.model-credit {
+  margin: 0.35rem 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.model-credit a {
+  color: var(--accent);
+}
+
+.muscle-line {
+  margin: 0 0 0.5rem;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
 .panel {
   padding: 1.1rem 1.15rem 1.2rem;
   display: flex;

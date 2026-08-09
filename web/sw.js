@@ -43,6 +43,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Do not cache large GLB models in the service worker
+  if (url.pathname.endsWith(".glb") || url.pathname.endsWith(".gltf")) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       const network = fetch(request)

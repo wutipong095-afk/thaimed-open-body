@@ -1,14 +1,25 @@
 /**
- * Procedural low-poly body (Phase 5 MVP).
- * Same region_id as 2D map — no external GLB required yet.
+ * 3D body viewer — Z-Anatomy GLB (Draco) with procedural box fallback.
  */
 
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+import {
+  resolveRegionFromMuscle,
+  regionFromPosition,
+  cleanMuscleLabel,
+} from "./muscleRegion.js";
+
+const MODEL_URL = new URL("../models/zanatomy-muscles-web.glb", import.meta.url).href;
+
+const COLOR_IDLE = 0x3a6b5c;
+const COLOR_HOVER = 0x4fd0b0;
+const COLOR_ACTIVE = 0xffc45c;
 
 /** @typedef {{ id: string, pos: [number, number, number], size: [number, number, number] }} RegionBox */
 
-/** Approximate collider boxes — Y up, -X left, +Z anterior */
 const REGION_BOXES = /** @type {RegionBox[]} */ ([
   { id: "head_cranial", pos: [0, 1.72, 0], size: [0.22, 0.14, 0.2] },
   { id: "face", pos: [0, 1.55, 0.08], size: [0.18, 0.16, 0.12] },
@@ -49,65 +60,138 @@ const REGION_BOXES = /** @type {RegionBox[]} */ ([
   { id: "ankle_foot_right", pos: [0.12, -0.28, 0.04], size: [0.12, 0.08, 0.18] },
 ]);
 
-const COLOR_IDLE = 0x3a6b5c;
-const COLOR_HOVER = 0x4fd0b0;
-const COLOR_ACTIVE = 0xffc45c;
-
 export class Body3D {
   /**
    * @param {HTMLElement} container
-   * @param {{ onSelect?: (regionId: string) => void }} [options]
+   * @param {{ onSelect?: (regionId: string, meta?: object) => void, onStatus?: (msg: string) => void }} [options]
    */
   constructor(container, options = {}) {
     this.container = container;
     this.onSelect = options.onSelect || (() => {});
-    this.meshes = new Map();
+    this.onStatus = options.onStatus || (() => {});
+    /** @type {THREE.Object3D[]} */
+    this.clickable = [];
+    /** @type {Map<string, THREE.Mesh[]>} */
+    this.byRegion = new Map();
     this.activeId = null;
-    this.hoverId = null;
+    this.activeMesh = null;
+    this.hoverMesh = null;
     this.raf = 0;
     this.disposed = false;
+    this.mode = "loading"; // loading | glb | boxes
+    this.modelRoot = null;
+    this.modelHeight = 1.7;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x101a16);
 
     const w = container.clientWidth || 320;
     const h = container.clientHeight || 560;
-    this.camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
-    this.camera.position.set(0, 0.85, 3.2);
+    this.camera = new THREE.PerspectiveCamera(40, w / h, 0.01, 200);
+    this.camera.position.set(0, 1.0, 3.4);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.setSize(w, h);
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target.set(0, 0.75, 0);
+    this.controls.target.set(0, 0.9, 0);
     this.controls.enableDamping = true;
-    this.controls.minDistance = 1.6;
-    this.controls.maxDistance = 5;
-    this.controls.maxPolarAngle = Math.PI * 0.85;
+    this.controls.minDistance = 0.8;
+    this.controls.maxDistance = 8;
 
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
 
     this._addLights();
-    this._buildMeshes();
     this._bindEvents();
     this._ro = new ResizeObserver(() => this.resize());
     this._ro.observe(container);
     this._animate();
+    this._loadModel();
   }
 
   _addLights() {
-    const amb = new THREE.AmbientLight(0xb8d4c8, 0.7);
-    const key = new THREE.DirectionalLight(0xffffff, 0.85);
-    key.position.set(2, 4, 3);
-    const fill = new THREE.DirectionalLight(0x88aaaa, 0.35);
-    fill.position.set(-2, 1, -2);
-    this.scene.add(amb, key, fill);
+    this.scene.add(new THREE.AmbientLight(0xc8ddd4, 0.75));
+    const key = new THREE.DirectionalLight(0xffffff, 1.05);
+    key.position.set(2.2, 4.5, 3.2);
+    const fill = new THREE.DirectionalLight(0x88aaaa, 0.45);
+    fill.position.set(-2.5, 1.2, -2);
+    const rim = new THREE.DirectionalLight(0xffe0c0, 0.25);
+    rim.position.set(0, 2, -3);
+    this.scene.add(key, fill, rim);
   }
 
-  _buildMeshes() {
+  _loadModel() {
+    this.onStatus("กำลังโหลดโมเดลกล้ามเนื้อ (Z-Anatomy)…");
+    const draco = new DRACOLoader();
+    draco.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.7/");
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(draco);
+
+    loader.load(
+      MODEL_URL,
+      (gltf) => {
+        if (this.disposed) return;
+        this.modelRoot = gltf.scene;
+        this._prepareGltf(this.modelRoot);
+        this.scene.add(this.modelRoot);
+        this._frameObject(this.modelRoot);
+        this.mode = "glb";
+        this.onStatus("โมเดล Z-Anatomy พร้อม · ลากหมุน · คลิกกล้ามเนื้อ");
+      },
+      (ev) => {
+        if (!ev.total) return;
+        const pct = Math.round((ev.loaded / ev.total) * 100);
+        this.onStatus(`กำลังโหลดโมเดล… ${pct}%`);
+      },
+      (err) => {
+        console.warn("GLB load failed, using box fallback", err);
+        this.onStatus("โหลด GLB ไม่ได้ — ใช้โหมดกล่องแทน");
+        this._buildBoxFallback();
+        this.mode = "boxes";
+      }
+    );
+  }
+
+  _prepareGltf(root) {
+    this.clickable = [];
+    this.byRegion.clear();
+    root.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(root);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+    root.position.sub(center);
+    // Normalize height ~1.7
+    const scale = size.y > 0.001 ? 1.7 / size.y : 1;
+    root.scale.multiplyScalar(scale);
+    root.updateMatrixWorld(true);
+    this.modelHeight = 1.7;
+
+    root.traverse((obj) => {
+      if (!obj.isMesh) return;
+      obj.castShadow = false;
+      obj.receiveShadow = false;
+      if (obj.material) {
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        mats.forEach((m) => {
+          if (!m) return;
+          m.side = THREE.DoubleSide;
+          if ("emissive" in m) m.emissiveIntensity = m.emissiveIntensity ?? 0;
+        });
+      }
+      const label = cleanMuscleLabel(obj.name || obj.parent?.name || "muscle");
+      obj.userData.muscleName = label;
+      obj.userData.baseEmissive = null;
+      this.clickable.push(obj);
+    });
+  }
+
+  _buildBoxFallback() {
     const group = new THREE.Group();
     for (const box of REGION_BOXES) {
       const geo = new THREE.BoxGeometry(...box.size);
@@ -121,10 +205,29 @@ export class Body3D {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(...box.pos);
       mesh.userData.regionId = box.id;
-      this.meshes.set(box.id, mesh);
+      mesh.userData.muscleName = box.id;
+      this.clickable.push(mesh);
+      this._indexRegion(box.id, mesh);
       group.add(mesh);
     }
     this.scene.add(group);
+    this.controls.target.set(0, 0.85, 0);
+    this.camera.position.set(0, 0.9, 3.2);
+  }
+
+  _indexRegion(regionId, mesh) {
+    if (!this.byRegion.has(regionId)) this.byRegion.set(regionId, []);
+    this.byRegion.get(regionId).push(mesh);
+  }
+
+  _frameObject(obj) {
+    const box = new THREE.Box3().setFromObject(obj);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    this.controls.target.copy(center);
+    const dist = Math.max(size.x, size.y, size.z) * 1.35;
+    this.camera.position.set(center.x, center.y + size.y * 0.05, center.z + dist);
+    this.controls.update();
   }
 
   _bindEvents() {
@@ -144,41 +247,98 @@ export class Body3D {
   _hit(event) {
     this._normPointer(event);
     this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hits = this.raycaster.intersectObjects([...this.meshes.values()], false);
-    return hits[0]?.object || null;
+    const hits = this.raycaster.intersectObjects(this.clickable, false);
+    return hits[0] || null;
+  }
+
+  _setMeshHighlight(mesh, on, colorHex) {
+    if (!mesh?.material) return;
+    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    for (const m of mats) {
+      if (!m || !("emissive" in m)) {
+        if (m?.color && this.mode === "boxes") {
+          m.color.setHex(on ? colorHex : COLOR_IDLE);
+        }
+        continue;
+      }
+      if (on) {
+        if (mesh.userData.baseEmissive == null) {
+          mesh.userData.baseEmissive = m.emissive.getHex();
+        }
+        m.emissive.setHex(colorHex);
+        m.emissiveIntensity = 0.55;
+      } else {
+        const base = mesh.userData.baseEmissive ?? 0x000000;
+        m.emissive.setHex(base);
+        m.emissiveIntensity = 0;
+      }
+    }
   }
 
   _pointerMove(event) {
-    const mesh = this._hit(event);
-    const id = mesh?.userData.regionId || null;
-    if (id === this.hoverId) return;
-    if (this.hoverId && this.hoverId !== this.activeId) {
-      this._paint(this.hoverId, COLOR_IDLE);
+    const hit = this._hit(event);
+    const mesh = hit?.object || null;
+    if (mesh === this.hoverMesh) return;
+    if (this.hoverMesh && this.hoverMesh !== this.activeMesh) {
+      this._setMeshHighlight(this.hoverMesh, false);
     }
-    this.hoverId = id;
-    if (id && id !== this.activeId) this._paint(id, COLOR_HOVER);
-    this.renderer.domElement.style.cursor = id ? "pointer" : "grab";
+    this.hoverMesh = mesh;
+    if (mesh && mesh !== this.activeMesh) {
+      this._setMeshHighlight(mesh, true, COLOR_HOVER);
+    }
+    this.renderer.domElement.style.cursor = mesh ? "pointer" : "grab";
   }
 
   _click(event) {
-    const mesh = this._hit(event);
-    if (!mesh) return;
-    const id = mesh.userData.regionId;
-    this.setActive(id);
-    this.onSelect(id);
+    const hit = this._hit(event);
+    if (!hit) return;
+    const mesh = hit.object;
+    const muscleName = mesh.userData.muscleName || cleanMuscleLabel(mesh.name);
+    let regionId = mesh.userData.regionId;
+    let matchedBy = "userdata";
+
+    if (!regionId) {
+      const local = hit.point.clone();
+      // Normalize point into ~0..1 body height space relative to framed model
+      const norm = {
+        x: local.x / Math.max(this.modelHeight * 0.35, 0.01),
+        y: (local.y + this.modelHeight * 0.05) / this.modelHeight,
+        z: local.z / Math.max(this.modelHeight * 0.25, 0.01),
+      };
+      const resolved = resolveRegionFromMuscle(muscleName, norm);
+      regionId = resolved.regionId;
+      matchedBy = resolved.matchedBy;
+      // also try pure position if name weak
+      if (matchedBy === "fallback") {
+        regionId = regionFromPosition(norm);
+        matchedBy = "position";
+      }
+    }
+
+    this.setActive(regionId, mesh);
+    this.onSelect(regionId, {
+      muscleName,
+      matchedBy,
+      source: this.mode,
+    });
   }
 
-  _paint(regionId, color) {
-    const mesh = this.meshes.get(regionId);
-    if (mesh) mesh.material.color.setHex(color);
-  }
-
-  setActive(regionId) {
-    if (this.activeId && this.activeId !== regionId) {
-      this._paint(this.activeId, COLOR_IDLE);
+  setActive(regionId, mesh = null) {
+    if (this.activeMesh && this.activeMesh !== mesh) {
+      this._setMeshHighlight(this.activeMesh, false);
     }
     this.activeId = regionId || null;
-    if (regionId) this._paint(regionId, COLOR_ACTIVE);
+    this.activeMesh = mesh;
+    if (mesh) {
+      this._setMeshHighlight(mesh, true, COLOR_ACTIVE);
+      return;
+    }
+    // Highlight by region for box mode / external select
+    const list = this.byRegion.get(regionId) || [];
+    for (const m of this.clickable) {
+      if (m.userData.regionId === regionId) this._setMeshHighlight(m, true, COLOR_ACTIVE);
+    }
+    if (list[0]) this.activeMesh = list[0];
   }
 
   resize() {
@@ -206,14 +366,15 @@ export class Body3D {
     this.controls.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
-    this.meshes.clear();
+    this.clickable = [];
+    this.byRegion.clear();
   }
 }
 
 export function canUseWebGL() {
   try {
     const c = document.createElement("canvas");
-    return !!(c.getContext("webgl") || c.getContext("experimental-webgl"));
+    return !!(c.getContext("webgl2") || c.getContext("webgl") || c.getContext("experimental-webgl"));
   } catch {
     return false;
   }

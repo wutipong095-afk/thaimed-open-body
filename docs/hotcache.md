@@ -4,23 +4,20 @@
 
 ## สถานะปัจจุบัน
 
-- **Branch:** `feat/phase6-polish` (ห้ามทำงานบน main)
-- **Phase:** 6 Polish — กำลังทำบนกิ่งนี้
-- **รัน UI:** `python scripts/serve-web.py` → http://127.0.0.1:8787/web/
+- **Branch:** `feat/zanatomy-glb` (ห้ามทำงานบน main)
+- **Phase:** Z-Anatomy GLB ในโหมด 3D
+- **โมเดล local:** `web/models/zanatomy-muscles-web.glb` (~23 MB, Draco) — ไม่ commit
+- **รัน:** `python scripts/serve-web.py` → http://127.0.0.1:8787/web/ → กด **3D**
 
-## Last — Phase 6 (in progress)
+## Last — Z-Anatomy integration
 
-- โหมด ผู้ป่วย / ผู้เรียน
-- ประวัติเลือกใน localStorage + ส่งออก `.md`
-- PWA พื้นฐาน (manifest + service worker)
-- `docs/user-guide.md`
-
-## Prev
-
-- Phase 5 3D MVP merged เข้า main (`03879a1`)
-- Phase 4 knowledge bridge อยู่ใน main แล้ว
+- โหลด GLB + DRACOLoader
+- คลิกกล้ามเนื้อ → map ไป `region_id` (ชื่อ Latin + ตำแหน่ง)
+- แสดงชื่อกล้ามเนื้อ · เครดิต CC BY-SA
+- fallback กล่องถ้าโหลดโมเดลไม่ได้
 
 ## ต้องทำต่อ
 
-1. Review/merge `feat/phase6-polish` เมื่อผู้ใช้สั่ง
-2. (ทางเลือก) โมเดล GLB / RAG
+1. ทดลองคลิกหลายโซน ปรับ heuristic ใน `muscleRegion.js` ถ้า map เพี้ยน
+2. Merge เมื่อผู้ใช้สั่ง
+3. (ทางเลือก) ตาราง map ชื่อมัดละเอียดขึ้น

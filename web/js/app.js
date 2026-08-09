@@ -16,7 +16,9 @@ const els = {
   detailBody: document.querySelector(".detail-body"),
   title: document.getElementById("detail-title"),
   en: document.getElementById("detail-en"),
+  muscle: document.getElementById("detail-muscle"),
   blurb: document.getElementById("detail-blurb"),
+  modelCredit: document.getElementById("model-credit"),
   followups: document.getElementById("detail-followups"),
   vaultStatus: document.getElementById("vault-status"),
   vault: document.getElementById("detail-vault"),
@@ -161,6 +163,16 @@ function showRegion(regionId, options = {}) {
   els.detailBody.hidden = false;
   els.title.textContent = region.name_th;
   els.en.textContent = session.role === "learner" ? region.name_en || "" : "";
+  if (options.muscleName) {
+    els.muscle.hidden = false;
+    els.muscle.textContent =
+      session.role === "learner"
+        ? `กล้ามเนื้อ: ${options.muscleName}`
+        : `บริเวณที่เกี่ยวข้องกับกล้ามเนื้อที่เลือก`;
+  } else {
+    els.muscle.hidden = true;
+    els.muscle.textContent = "";
+  }
   els.blurb.textContent = region.patient_blurb_th || "";
   els.id.textContent = region.id;
   fillList(els.wiki, region.wiki_refs, "—");
@@ -232,7 +244,12 @@ function ensure3d() {
   }
   try {
     body3d = new Body3D(els.figure3d, {
-      onSelect: (regionId) => showRegion(regionId),
+      onSelect: (regionId, meta = {}) => {
+        showRegion(regionId, { muscleName: meta.muscleName });
+      },
+      onStatus: (msg) => {
+        els.stageHint.textContent = msg;
+      },
     });
     if (activeId) body3d.setActive(activeId);
     return true;
@@ -256,8 +273,9 @@ function setMode(next) {
   els.figure3d.hidden = !is3d;
   els.view2dToggle.hidden = is3d;
   els.stageHint.textContent = is3d
-    ? "ลากเพื่อหมุน · คลิกกล่องบริเวณที่เจ็บ · สลับกลับ 2D ได้ด้านบน"
+    ? "ลากเพื่อหมุน · คลิกกล้ามเนื้อ · สลับกลับ 2D ได้ด้านบน"
     : "แตะหรือคลิกบริเวณที่เจ็บ · สลับด้านหน้า/ด้านหลังด้านบน";
+  if (els.modelCredit) els.modelCredit.hidden = !is3d;
 
   document.querySelectorAll(".mode-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.mode === mode);
