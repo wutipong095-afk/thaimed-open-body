@@ -275,7 +275,8 @@ export class Body3D {
           }
         });
       }
-      const label = cleanMuscleLabel(obj.name || obj.parent?.name || "muscle");
+      const rawName = obj.name || obj.parent?.name || "muscle";
+      const label = cleanMuscleLabel(rawName);
       const box = new THREE.Box3().setFromObject(obj);
       const c = box.getCenter(new THREE.Vector3());
       const norm = {
@@ -283,7 +284,9 @@ export class Body3D {
         y: (c.y + this.modelHeight * 0.05) / this.modelHeight,
         z: c.z / Math.max(this.modelHeight * 0.25, 0.01),
       };
-      const resolved = resolveRegionFromMuscle(label, norm);
+      // Resolve from raw name (keeps glued …musclel / Deltoidl) + center X for side
+      const resolved = resolveRegionFromMuscle(rawName, norm);
+      obj.userData.rawName = rawName;
       obj.userData.muscleName = label;
       obj.userData.regionId = resolved.regionId;
       obj.userData.side = resolved.side;
@@ -412,30 +415,29 @@ export class Body3D {
     const hit = this._hit(event);
     if (!hit) return;
     const mesh = hit.object;
-    const muscleName = mesh.userData.muscleName || cleanMuscleLabel(mesh.name);
-    let regionId = mesh.userData.regionId;
-    let side = mesh.userData.side || "mid";
-    let matchedBy = mesh.userData.matchedBy || "userdata";
-
-    if (!regionId) {
-      const local = hit.point.clone();
-      const norm = {
-        x: local.x / Math.max(this.modelHeight * 0.35, 0.01),
-        y: (local.y + this.modelHeight * 0.05) / this.modelHeight,
-        z: local.z / Math.max(this.modelHeight * 0.25, 0.01),
-      };
-      const resolved = resolveRegionFromMuscle(muscleName, norm);
-      regionId = resolved.regionId;
-      side = resolved.side;
-      matchedBy = resolved.matchedBy;
-      if (matchedBy === "fallback") {
-        regionId = regionFromPosition(norm);
-        matchedBy = "position";
-      }
+    const rawName = mesh.userData.rawName || mesh.name || "";
+    const muscleName = mesh.userData.muscleName || cleanMuscleLabel(rawName);
+    const local = hit.point.clone();
+    const norm = {
+      x: local.x / Math.max(this.modelHeight * 0.35, 0.01),
+      y: (local.y + this.modelHeight * 0.05) / this.modelHeight,
+      z: local.z / Math.max(this.modelHeight * 0.25, 0.01),
+    };
+    // Always re-resolve with hit point so L/R tracks the clicked side
+    const resolved = resolveRegionFromMuscle(rawName || muscleName, norm);
+    let regionId = resolved.regionId;
+    let side = resolved.side;
+    let matchedBy = resolved.matchedBy;
+    if (matchedBy === "fallback") {
+      regionId = regionFromPosition(norm);
+      matchedBy = "position";
     }
+    mesh.userData.regionId = regionId;
+    mesh.userData.side = side;
 
+    const sideTh = side === "L" ? "ซ้าย" : side === "R" ? "ขวา" : "";
     this.setActive(regionId, mesh);
-    this.onStatus(`เลือก: ${muscleName}`);
+    this.onStatus(sideTh ? `เลือก: ${muscleName} · ${sideTh}` : `เลือก: ${muscleName}`);
     this.onSelect(regionId, {
       muscleName,
       side,
