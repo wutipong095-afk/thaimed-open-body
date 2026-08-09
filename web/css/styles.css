@@ -320,6 +320,7 @@ body.role-patient .learner-only {
   margin: 0;
   line-height: 1.55;
   color: #d7e6df;
+  white-space: pre-wrap;
 }
 
 .source-block {
