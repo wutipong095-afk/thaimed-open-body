@@ -59,11 +59,16 @@ function fillList(ul, items, emptyLabel) {
   }
 }
 
-function setActiveHotspots(regionId) {
+function setActiveHotspots(regionId, options = {}) {
   document.querySelectorAll(".hotspot").forEach((el) => {
     el.classList.toggle("is-active", el.dataset.region === regionId);
   });
-  body3d?.setActive(regionId);
+  // Avoid wiping the clicked GLB mesh highlight when syncing from 3D.
+  if (options.from3d && options.mesh) {
+    body3d?.setActive(regionId, options.mesh);
+  } else if (!options.from3d) {
+    body3d?.setActive(regionId);
+  }
 }
 
 function persistSession() {
@@ -156,7 +161,7 @@ function showRegion(regionId, options = {}) {
   }
 
   activeId = regionId;
-  setActiveHotspots(regionId);
+  setActiveHotspots(regionId, options);
 
   els.detail.classList.remove("is-empty");
   els.placeholder.hidden = true;
@@ -165,15 +170,17 @@ function showRegion(regionId, options = {}) {
   els.en.textContent = session.role === "learner" ? region.name_en || "" : "";
   if (options.muscleName) {
     els.muscle.hidden = false;
-    els.muscle.textContent =
-      session.role === "learner"
-        ? `กล้ามเนื้อ: ${options.muscleName}`
-        : `บริเวณที่เกี่ยวข้องกับกล้ามเนื้อที่เลือก`;
+    const side =
+      options.side === "L" ? " · ซ้าย" : options.side === "R" ? " · ขวา" : "";
+    els.muscle.textContent = `กล้ามเนื้อที่แตะ: ${options.muscleName}${side}`;
   } else {
     els.muscle.hidden = true;
     els.muscle.textContent = "";
   }
-  els.blurb.textContent = region.patient_blurb_th || "";
+  const blurb = region.patient_blurb_th || "";
+  els.blurb.textContent = options.muscleName
+    ? `${blurb}\n\n(จากกล้ามเนื้อ: ${options.muscleName})`
+    : blurb;
   els.id.textContent = region.id;
   fillList(els.wiki, region.wiki_refs, "—");
   fillList(els.sen, region.sen_refs, "—");
@@ -181,9 +188,12 @@ function showRegion(regionId, options = {}) {
   els.vault.innerHTML = "";
 
   if (!options.skipSession) {
+    const label = options.muscleName
+      ? `${region.name_th} · ${options.muscleName}`
+      : region.name_th;
     session.items = pushSessionItem(session.items, {
       id: region.id,
-      name_th: region.name_th,
+      name_th: label,
       at: new Date().toLocaleString("th-TH"),
     });
     persistSession();
@@ -245,7 +255,12 @@ function ensure3d() {
   try {
     body3d = new Body3D(els.figure3d, {
       onSelect: (regionId, meta = {}) => {
-        showRegion(regionId, { muscleName: meta.muscleName });
+        showRegion(regionId, {
+          muscleName: meta.muscleName,
+          side: meta.side,
+          mesh: meta.mesh,
+          from3d: true,
+        });
       },
       onStatus: (msg) => {
         els.stageHint.textContent = msg;

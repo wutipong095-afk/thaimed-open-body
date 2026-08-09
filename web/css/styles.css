@@ -231,7 +231,8 @@ body.role-patient .learner-only {
   margin: 0 0 0.5rem;
   color: var(--accent);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .panel {

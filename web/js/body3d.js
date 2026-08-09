@@ -165,34 +165,51 @@ export class Body3D {
     );
   }
 
-  _isUiOrLabelMesh(obj) {
-    // Z-Anatomy: collection boards end with ".g"; real muscles use ".l"/".r".
-    // Only use the mesh's own name — never parent "Muscular system".
-    const name = String(obj.name || "").trim();
-    if (!name) return false;
-    if (/\.g$/i.test(name)) return true;
+  /** Blender glTF exporter turns "Muscular system.g" into "Muscular_systemg". */
+  _nameKey(name) {
+    return String(name || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "");
+  }
+
+  _isCollectionBoardMesh(obj) {
+    if (!obj?.isMesh) return false;
+    // Z-Anatomy collection nodes are meshes that own child anatomy meshes.
+    // Hiding the Object3D would hide children — strip geometry instead.
+    if (obj.children.length > 0) return true;
+    const key = this._nameKey(obj.name);
+    if (!key) return false;
+    if (key.startsWith("howto") || key.includes("navigation") || key.includes("cheatsheet")) {
+      return true;
+    }
+    // Sanitized ".g" boards without children still end with these stems.
     if (
-      /^(navigation|how\s*to|cheatsheet|cheat\s*sheet|take a picture|general terms|movements|reference (lines|planes)|cross section)/i.test(
-        name
-      ) ||
-      /how\s*to|cheatsheet|navigation\.st/i.test(name)
+      /(system|muscles|bursae|sheaths|terms|movements|lines|planes|organs|joints|fasciae|regions)g$/.test(
+        key
+      )
     ) {
       return true;
     }
     return false;
   }
 
+  _stripBoardGeometry(obj) {
+    if (obj.geometry) {
+      obj.geometry.dispose();
+      obj.geometry = new THREE.BufferGeometry();
+    }
+    obj.userData.isBoard = true;
+    obj.raycast = () => {};
+  }
+
   _keepMuscularOnly(root) {
     // Default scene roots include every organ system + UI boards.
-    // Keep Muscular system only so framing/clicks match the pain-map use case.
     const keep = [];
     const drop = [];
     for (const child of [...root.children]) {
-      if (/^muscular system/i.test(String(child.name || "").trim())) {
-        keep.push(child);
-      } else {
-        drop.push(child);
-      }
+      const key = this._nameKey(child.name);
+      if (key.startsWith("muscularsystem")) keep.push(child);
+      else drop.push(child);
     }
     if (!keep.length) return false;
     for (const child of drop) {
@@ -213,18 +230,10 @@ export class Body3D {
       return;
     }
 
-    // Drop collection title boards / HOW TO plates inside the kept tree
-    const uiTrash = [];
     root.traverse((obj) => {
       if (!obj.isMesh) return;
-      if (this._isUiOrLabelMesh(obj)) {
-        obj.visible = false;
-        uiTrash.push(obj);
-      }
+      if (this._isCollectionBoardMesh(obj)) this._stripBoardGeometry(obj);
     });
-    for (const obj of uiTrash) {
-      obj.removeFromParent();
-    }
 
     root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(root);
@@ -245,21 +254,43 @@ export class Body3D {
     this.modelHeight = 1.7;
 
     root.traverse((obj) => {
-      if (!obj.isMesh || !obj.visible) return;
+      if (!obj.isMesh || !obj.visible || obj.userData.isBoard) return;
+      if (!obj.geometry?.attributes?.position?.count) return;
       obj.castShadow = false;
       obj.receiveShadow = false;
       if (obj.material) {
+        // Clone so hover/active emissive does not tint every shared muscle.
+        if (Array.isArray(obj.material)) {
+          obj.material = obj.material.map((m) => (m ? m.clone() : m));
+        } else {
+          obj.material = obj.material.clone();
+        }
         const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
         mats.forEach((m) => {
           if (!m) return;
           m.side = THREE.DoubleSide;
-          if ("emissive" in m) m.emissiveIntensity = m.emissiveIntensity ?? 0;
+          if ("emissive" in m) {
+            m.emissive = m.emissive || new THREE.Color(0x000000);
+            m.emissiveIntensity = 0;
+          }
         });
       }
       const label = cleanMuscleLabel(obj.name || obj.parent?.name || "muscle");
+      const box = new THREE.Box3().setFromObject(obj);
+      const c = box.getCenter(new THREE.Vector3());
+      const norm = {
+        x: c.x / Math.max(this.modelHeight * 0.35, 0.01),
+        y: (c.y + this.modelHeight * 0.05) / this.modelHeight,
+        z: c.z / Math.max(this.modelHeight * 0.25, 0.01),
+      };
+      const resolved = resolveRegionFromMuscle(label, norm);
       obj.userData.muscleName = label;
+      obj.userData.regionId = resolved.regionId;
+      obj.userData.side = resolved.side;
+      obj.userData.matchedBy = resolved.matchedBy;
       obj.userData.baseEmissive = null;
       this.clickable.push(obj);
+      this._indexRegion(resolved.regionId, obj);
     });
   }
 
@@ -310,8 +341,13 @@ export class Body3D {
 
   _bindEvents() {
     const el = this.renderer.domElement;
+    this._ptrDown = null;
+    this._onPointerDown = (e) => {
+      this._ptrDown = { x: e.clientX, y: e.clientY };
+    };
     this._onPointerMove = (e) => this._pointerMove(e);
     this._onClick = (e) => this._click(e);
+    el.addEventListener("pointerdown", this._onPointerDown);
     el.addEventListener("pointermove", this._onPointerMove);
     el.addEventListener("click", this._onClick);
   }
@@ -333,18 +369,18 @@ export class Body3D {
     if (!mesh?.material) return;
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     for (const m of mats) {
-      if (!m || !("emissive" in m)) {
-        if (m?.color && this.mode === "boxes") {
-          m.color.setHex(on ? colorHex : COLOR_IDLE);
-        }
+      if (!m) continue;
+      if (m.color && this.mode === "boxes") {
+        m.color.setHex(on ? colorHex : COLOR_IDLE);
         continue;
       }
+      if (!("emissive" in m)) continue;
       if (on) {
         if (mesh.userData.baseEmissive == null) {
-          mesh.userData.baseEmissive = m.emissive.getHex();
+          mesh.userData.baseEmissive = m.emissive?.getHex?.() ?? 0x000000;
         }
         m.emissive.setHex(colorHex);
-        m.emissiveIntensity = 0.55;
+        m.emissiveIntensity = 0.65;
       } else {
         const base = mesh.userData.baseEmissive ?? 0x000000;
         m.emissive.setHex(base);
@@ -368,16 +404,21 @@ export class Body3D {
   }
 
   _click(event) {
+    if (this._ptrDown) {
+      const dx = event.clientX - this._ptrDown.x;
+      const dy = event.clientY - this._ptrDown.y;
+      if (dx * dx + dy * dy > 25) return; // treat as orbit drag
+    }
     const hit = this._hit(event);
     if (!hit) return;
     const mesh = hit.object;
     const muscleName = mesh.userData.muscleName || cleanMuscleLabel(mesh.name);
     let regionId = mesh.userData.regionId;
-    let matchedBy = "userdata";
+    let side = mesh.userData.side || "mid";
+    let matchedBy = mesh.userData.matchedBy || "userdata";
 
     if (!regionId) {
       const local = hit.point.clone();
-      // Normalize point into ~0..1 body height space relative to framed model
       const norm = {
         x: local.x / Math.max(this.modelHeight * 0.35, 0.01),
         y: (local.y + this.modelHeight * 0.05) / this.modelHeight,
@@ -385,8 +426,8 @@ export class Body3D {
       };
       const resolved = resolveRegionFromMuscle(muscleName, norm);
       regionId = resolved.regionId;
+      side = resolved.side;
       matchedBy = resolved.matchedBy;
-      // also try pure position if name weak
       if (matchedBy === "fallback") {
         regionId = regionFromPosition(norm);
         matchedBy = "position";
@@ -394,9 +435,12 @@ export class Body3D {
     }
 
     this.setActive(regionId, mesh);
+    this.onStatus(`เลือก: ${muscleName}`);
     this.onSelect(regionId, {
       muscleName,
+      side,
       matchedBy,
+      mesh,
       source: this.mode,
     });
   }
@@ -439,6 +483,7 @@ export class Body3D {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
     this._ro?.disconnect();
+    this.renderer.domElement.removeEventListener("pointerdown", this._onPointerDown);
     this.renderer.domElement.removeEventListener("pointermove", this._onPointerMove);
     this.renderer.domElement.removeEventListener("click", this._onClick);
     this.controls.dispose();

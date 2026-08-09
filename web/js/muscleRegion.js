@@ -11,27 +11,37 @@ const NAME_RULES = [
   { re: /trapezius|levator scapulae|rhomboid|serratus anterior/i, region: (s) => (s === "L" ? "scapula_left" : s === "R" ? "scapula_right" : "upper_back") },
   { re: /pectoralis|intercostal|diaphragm|serratus posterior/i, region: "chest_anterior" },
   { re: /rectus abdominis|pyramidalis/i, region: "abdomen_umbilical" },
-  { re: /obliquus|transversus abdominis|quadratus lumborum/i, region: (s) => (s === "L" ? "flank_left" : s === "R" ? "flank_right" : "abdomen_umbilical") },
+  { re: /obliqu|transversus abdominis|quadratus lumborum|linea alba/i, region: (s) => (s === "L" ? "flank_left" : s === "R" ? "flank_right" : "abdomen_umbilical") },
   { re: /erector spinae|multifidus|iliocostalis|longissimus|spinalis|latissimus/i, region: (s) => (s === "L" ? "lumbar_left" : s === "R" ? "lumbar_right" : "lumbar_mid") },
   { re: /biceps brachii|brachialis|coracobrachialis|triceps|anconeus/i, region: (s) => (s === "L" ? "upper_arm_left" : "upper_arm_right") },
   { re: /brachioradialis|flexor|extensor|pronator|supinator|palmaris/i, region: (s) => (s === "L" ? "elbow_forearm_left" : "elbow_forearm_right") },
-  { re: /thenar|hypothenar|interosseous|lumbrical|opponens|abductor pollicis|adductor pollicis/i, region: (s) => (s === "L" ? "wrist_hand_left" : "wrist_hand_right") },
+  { re: /thenar|hypothenar|interosseous|lumbrical|opponens|abductor pollicis|adductor pollicis|palmar|dorsal interosse/i, region: (s) => (s === "L" ? "wrist_hand_left" : "wrist_hand_right") },
   { re: /gluteus|tensor fascia|piriformis|obturator|gemellus|quadratus femoris/i, region: (s) => (s === "L" ? "buttock_left" : "buttock_right") },
   { re: /iliacus|psoas|iliopsoas/i, region: (s) => (s === "L" ? "hip_left" : "hip_right") },
   { re: /quadriceps|vastus|rectus femoris|sartorius|adductor|gracilis|pectineus|hamstring|biceps femoris|semitendinosus|semimembranosus/i, region: (s) => (s === "L" ? "thigh_left" : "thigh_right") },
   { re: /gastrocnemius|soleus|tibialis|peroneus|fibularis|flexor digitorum longus|flexor hallucis|extensor digitorum longus|extensor hallucis|popliteus|plantaris/i, region: (s) => (s === "L" ? "calf_left" : "calf_right") },
-  { re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|lumbrical|interosseous pedis|extensor digitorum brevis|abductor digiti minimi/i, region: (s) => (s === "L" ? "ankle_foot_left" : "ankle_foot_right") },
-  { re: /patella|knee/i, region: (s) => (s === "L" ? "knee_left" : "knee_right") },
+  { re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi|plantar/i, region: (s) => (s === "L" ? "ankle_foot_left" : "ankle_foot_right") },
+  { re: /patella|knee|articularis genus/i, region: (s) => (s === "L" ? "knee_left" : "knee_right") },
 ];
 
 function detectSide(name) {
   const n = String(name || "");
-  if (/\b(left|sinister|\.l\b|_l\b|\bl\b)\b/i.test(n) || /[^a-z]l$/i.test(n.trim())) return "L";
-  if (/\b(right|dexter|\.r\b|_r\b|\br\b)\b/i.test(n) || /[^a-z]r$/i.test(n.trim())) return "R";
-  // Common Z-Anatomy suffixes: " ... L" / " ... R"
-  if (/\sL\s*$/i.test(n) || /\s\(L\)\s*$/i.test(n)) return "L";
-  if (/\sR\s*$/i.test(n) || /\s\(R\)\s*$/i.test(n)) return "R";
+  // After cleanMuscleLabel: "... muscle (L)"
+  if (/\(\s*L\s*\)\s*$/i.test(n) || /\sL\s*$/i.test(n)) return "L";
+  if (/\(\s*R\s*\)\s*$/i.test(n) || /\sR\s*$/i.test(n)) return "R";
+  // Raw sanitized glTF: "...musclel" / "...muscler"
+  if (/(?:muscle|ligament|tendon)l$/i.test(n) || /(?:^|[_\s.])l$/i.test(n)) return "L";
+  if (/(?:muscle|ligament|tendon)r$/i.test(n) || /(?:^|[_\s.])r$/i.test(n)) return "R";
+  if (/\b(left|sinister|\.l\b|_l\b)\b/i.test(n)) return "L";
+  if (/\b(right|dexter|\.r\b|_r\b)\b/i.test(n)) return "R";
   return "mid";
+}
+
+/** Side label in Thai for UI */
+export function sideLabelTh(side) {
+  if (side === "L") return "ซ้าย";
+  if (side === "R") return "ขวา";
+  return "";
 }
 
 /**
@@ -105,6 +115,9 @@ export function cleanMuscleLabel(name) {
   return String(name || "")
     .replace(/^Object_?/i, "")
     .replace(/_/g, " ")
+    // "oblique musclel" → "oblique muscle (L)" after underscore expand
+    .replace(/\b(muscle|ligament|tendon)l\b/gi, "$1 (L)")
+    .replace(/\b(muscle|ligament|tendon)r\b/gi, "$1 (R)")
     .replace(/\s+/g, " ")
     .trim();
 }
