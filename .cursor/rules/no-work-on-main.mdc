@@ -1,0 +1,26 @@
+---
+description: ห้ามทำงานหรือ commit บน main/master — ใช้กิ่ง feature เสมอ
+alwaysApply: true
+---
+
+# ห้ามทำงานบน main / master
+
+## กฎ
+
+- **ห้าม** แก้ไขโค้ด, commit, หรือทำงานต่อเนื่องบนกิ่ง `main` หรือ `master`
+- ก่อนเริ่มงาน: ตรวจ `git branch --show-current` — ถ้าอยู่บน `main`/`master` ให้สร้างหรือสลับไปกิ่ง feature ก่อน
+- ตั้งชื่อกิ่งแบบ `feat/…`, `fix/…`, `docs/…` แล้วทำงานบนกิ่งนั้นเท่านั้น
+- รวมเข้า `main` ได้เฉพาะเมื่อผู้ใช้สั่ง merge/PR ชัดเจน
+
+## ตัวอย่าง
+
+```text
+❌ BAD  — อยู่บน main แล้วแก้ไฟล์ / git commit
+✅ GOOD — git checkout -b feat/phase5-3d แล้วค่อยแก้ไฟล์
+✅ GOOD — ผู้ใช้สั่ง "merge" จึงค่อย checkout main แล้ว merge กิ่ง feature
+```
+
+## ตรวจสั้น ๆ ก่อนลงมือ
+
+1. `git branch --show-current` ต้องไม่ใช่ `main` หรือ `master`
+2. ถ้าใช่ → สร้างกิ่งใหม่จาก HEAD แล้วสลับไปก่อนทำงาน
