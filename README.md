@@ -35,18 +35,26 @@ repo นี้เก็บแอป + schema แผนที่บริเว�
 | 1 Region Map | 37 โซน + aliases | ✅ |
 | 2 MVP 2D | คลิกหน้า/หลัง | ✅ |
 | 3 Text | พิมพ์อาการ → region | ✅ พื้นฐาน |
-| 4 Knowledge | เชื่อม vault / RAG | ถัดไป |
-| 5 3D | Three.js + mesh ตาม id | รอ |
+| 4 Knowledge | เชื่อม vault local | ✅ (กิ่ง feat/phase4-knowledge-bridge) |
+| 5 3D | Three.js + mesh ตาม id | ถัดไป |
 | 6 Polish | mobile / UX | รอ |
 
 ## โครงสร้าง
 
 ```
-data/body-pain-map.json   — แผนที่โซนหลัก
-web/                      — UI 2D (HTML/CSS/JS + SVG)
-scripts/serve-web.py      — เปิดเซิร์ฟเวอร์ท้องถิ่น :8787
-scripts/validate-map.py   — ตรวจ map
-docs/                     — roadmap · hotcache · architecture
+data/body-pain-map.json      — แผนที่โซนหลัก
+data/region-followups.json   — คำถามซักต่อตามโซน
+web/                         — UI 2D (HTML/CSS/JS + SVG)
+scripts/serve-web.py         — UI + /api/knowledge (:8787)
+scripts/validate-map.py      — ตรวจ map
+docs/                        — roadmap · hotcache · architecture
+```
+
+ตั้งค่าคลัง (ถ้าไม่ใช่ path เริ่มต้น):
+
+```powershell
+$env:BODY_XAMBRAIN_VAULT = "D:\obsidian\body-xambrain"
+python scripts/serve-web.py
 ```
 
 ## ตรวจ map

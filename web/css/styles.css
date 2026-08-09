@@ -265,6 +265,72 @@ body {
   color: #d7e6df;
 }
 
+.source-block {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.source-block:first-of-type {
+  margin-top: 0.55rem;
+}
+
+.source-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.followups {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: #d7e6df;
+  line-height: 1.45;
+}
+
+.followups li + li {
+  margin-top: 0.35rem;
+}
+
+.vault-status {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.vault-excerpts {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.vault-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.vault-card h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-family: var(--font-display);
+}
+
+.vault-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #cfe0d8;
+  white-space: pre-wrap;
+}
+
+.vault-card.is-missing {
+  opacity: 0.7;
+}
+
 .meta {
   display: grid;
   grid-template-columns: 1fr 1fr;

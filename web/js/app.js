@@ -1,6 +1,7 @@
 import { buildAliasIndex, resolveRegionId, needsSideClarify } from "./resolve.js";
 
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
+const KNOWLEDGE_URL = "/api/knowledge";
 
 const els = {
   detail: document.getElementById("detail"),
@@ -9,6 +10,9 @@ const els = {
   title: document.getElementById("detail-title"),
   en: document.getElementById("detail-en"),
   blurb: document.getElementById("detail-blurb"),
+  followups: document.getElementById("detail-followups"),
+  vaultStatus: document.getElementById("vault-status"),
+  vault: document.getElementById("detail-vault"),
   wiki: document.getElementById("detail-wiki"),
   sen: document.getElementById("detail-sen"),
   id: document.getElementById("detail-id"),
@@ -23,6 +27,7 @@ const els = {
 let regionsById = new Map();
 let aliasIndex = [];
 let activeId = null;
+let knowledgeSeq = 0;
 
 function fillList(ul, items, emptyLabel) {
   ul.innerHTML = "";
@@ -38,6 +43,60 @@ function setActiveHotspots(regionId) {
   document.querySelectorAll(".hotspot").forEach((el) => {
     el.classList.toggle("is-active", el.dataset.region === regionId);
   });
+}
+
+function renderVault(fromVault) {
+  els.vault.innerHTML = "";
+  if (!fromVault || !fromVault.available) {
+    els.vaultStatus.textContent =
+      "ยังไม่เชื่อมคลังท้องถิ่น — ใช้คำอธิบายจากแผนที่ได้ตามปกติ";
+    return;
+  }
+
+  const items = fromVault.items || [];
+  const okItems = items.filter((i) => i.ok);
+  els.vaultStatus.textContent = okItems.length
+    ? `ดึงจาก vault ได้ ${okItems.length} โน้ต`
+    : "พบโฟลเดอร์คลัง แต่ยังอ่านโน้ตที่ลิงก์ไม่ได้";
+
+  for (const item of items) {
+    const card = document.createElement("div");
+    card.className = "vault-card" + (item.ok ? "" : " is-missing");
+    const h = document.createElement("h4");
+    h.textContent = item.ref;
+    const p = document.createElement("p");
+    p.textContent = item.ok ? item.excerpt : `ไม่พบไฟล์ (${item.error || "missing"})`;
+    card.append(h, p);
+    els.vault.appendChild(card);
+  }
+}
+
+async function loadKnowledge(regionId) {
+  const seq = ++knowledgeSeq;
+  els.vaultStatus.textContent = "กำลังโหลดจากคลัง…";
+  els.vault.innerHTML = "";
+  try {
+    const res = await fetch(`${KNOWLEDGE_URL}?region_id=${encodeURIComponent(regionId)}`);
+    const data = await res.json();
+    if (seq !== knowledgeSeq || activeId !== regionId) return;
+    if (!data.ok) {
+      els.vaultStatus.textContent = "โหลดความรู้เสริมไม่ได้ — ใช้แผนที่อย่างเดียว";
+      fillList(els.followups, [], "—");
+      return;
+    }
+    if (data.from_map?.blurb_th) {
+      els.blurb.textContent = data.from_map.blurb_th;
+    }
+    fillList(els.followups, data.followups?.questions || [], "—");
+    fillList(els.wiki, data.from_map?.wiki_refs || [], "—");
+    fillList(els.sen, data.from_map?.sen_refs || [], "—");
+    renderVault(data.from_vault);
+  } catch {
+    if (seq !== knowledgeSeq || activeId !== regionId) return;
+    els.vaultStatus.textContent =
+      "เซิร์ฟเวอร์ความรู้ไม่พร้อม — ใช้คำอธิบายจากแผนที่ (รีสตาร์ท serve-web.py ถ้าต้องการคลัง)";
+    fillList(els.followups, [], "—");
+  }
 }
 
 function showRegion(regionId, options = {}) {
@@ -59,6 +118,8 @@ function showRegion(regionId, options = {}) {
   els.id.textContent = region.id;
   fillList(els.wiki, region.wiki_refs, "—");
   fillList(els.sen, region.sen_refs, "—");
+  fillList(els.followups, ["กำลังโหลด…"], "—");
+  els.vault.innerHTML = "";
 
   if (options.clarify) {
     showFeedback("ระบุซ้ายหรือขวาให้ชัดเจนได้อีกครั้ง ถ้าตำแหน่งยังไม่ตรง");
@@ -66,8 +127,8 @@ function showRegion(regionId, options = {}) {
     hideFeedback();
   }
 
-  // Auto-switch view if region only exists on one silhouette
   maybeSwitchViewForRegion(regionId);
+  loadKnowledge(regionId);
 }
 
 function maybeSwitchViewForRegion(regionId) {
@@ -93,7 +154,6 @@ function hideFeedback() {
 
 function setView(view) {
   const anterior = view === "anterior";
-  // SVG + HTML `hidden` is unreliable across browsers — toggle class only
   els.viewAnterior.classList.toggle("is-visible", anterior);
   els.viewPosterior.classList.toggle("is-visible", !anterior);
   els.viewAnterior.setAttribute("aria-hidden", anterior ? "false" : "true");

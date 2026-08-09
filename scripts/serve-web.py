@@ -1,37 +1,189 @@
 #!/usr/bin/env python3
-"""Serve repo root so web/ can fetch data/body-pain-map.json."""
+"""Serve UI + Phase 4 knowledge bridge (optional local vault wiki)."""
 
 from __future__ import annotations
 
-import functools
-import http.server
-import socketserver
+import json
+import os
+import re
+import urllib.parse
 import webbrowser
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PORT = 8787
+PORT = int(os.environ.get("BODY_PAIN_PORT", "8787"))
+DEFAULT_VAULT = Path(os.environ.get("BODY_XAMBRAIN_VAULT", r"D:\obsidian\body-xambrain"))
+
+MAP_PATH = ROOT / "data" / "body-pain-map.json"
+FOLLOWUPS_PATH = ROOT / "data" / "region-followups.json"
+
+_FRONTMATTER_RE = re.compile(r"^---\r?\n.*?\r?\n---\r?\n", re.DOTALL)
+_H2_RE = re.compile(r"^##\s+(.+)$", re.MULTILINE)
 
 
-class Handler(http.server.SimpleHTTPRequestHandler):
+def load_json(path: Path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def strip_frontmatter(text: str) -> str:
+    return _FRONTMATTER_RE.sub("", text, count=1).lstrip()
+
+
+def excerpt_markdown(text: str, limit: int = 480) -> str:
+    body = strip_frontmatter(text)
+    # Prefer สาระสำคัญ section when present
+    preferred = None
+    for match in _H2_RE.finditer(body):
+        title = match.group(1).strip()
+        start = match.end()
+        nxt = _H2_RE.search(body, start)
+        chunk = body[start : nxt.start() if nxt else len(body)].strip()
+        if "สาระสำคัญ" in title or preferred is None:
+            preferred = chunk
+            if "สาระสำคัญ" in title:
+                break
+    raw = preferred or body
+    raw = re.sub(r"\[\[([^\]|]+)(?:\|[^\]]+)?\]\]", r"\1", raw)
+    raw = re.sub(r"[#>*_`]", "", raw)
+    raw = re.sub(r"\n{2,}", "\n", raw).strip()
+    if len(raw) <= limit:
+        return raw
+    return raw[: limit - 1].rstrip() + "…"
+
+
+def wiki_excerpt(vault: Path, ref: str) -> dict | None:
+    name = ref.strip().replace("\\", "/").removesuffix(".md")
+    if not name or ".." in name or name.startswith("/"):
+        return None
+    path = vault / "wiki" / f"{name}.md"
+    if not path.is_file():
+        return {"ref": name, "ok": False, "error": "not_found"}
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return {"ref": name, "ok": False, "error": str(exc)}
+    return {
+        "ref": name,
+        "ok": True,
+        "path": str(path),
+        "excerpt": excerpt_markdown(text),
+        "source_label": "จากคลัง",
+    }
+
+
+def build_knowledge(region_id: str) -> dict:
+    pain_map = load_json(MAP_PATH)
+    followups_doc = load_json(FOLLOWUPS_PATH)
+    regions = {r["id"]: r for r in pain_map.get("regions", [])}
+    region = regions.get(region_id)
+    if not region:
+        return {"ok": False, "error": f"unknown region: {region_id}"}
+
+    by_id = followups_doc.get("by_id") or {}
+    questions = list(by_id.get(region_id) or followups_doc.get("default") or [])
+
+    vault = DEFAULT_VAULT
+    vault_ok = vault.is_dir() and (vault / "wiki").is_dir()
+    wiki_items = []
+    if vault_ok:
+        for ref in region.get("wiki_refs") or []:
+            item = wiki_excerpt(vault, ref)
+            if item:
+                wiki_items.append(item)
+
+    return {
+        "ok": True,
+        "region_id": region_id,
+        "disclaimer_th": pain_map.get("disclaimer_th", ""),
+        "from_map": {
+            "source_label": "จากแผนที่",
+            "name_th": region.get("name_th"),
+            "name_en": region.get("name_en"),
+            "blurb_th": region.get("patient_blurb_th"),
+            "sen_refs": region.get("sen_refs") or [],
+            "wiki_refs": region.get("wiki_refs") or [],
+        },
+        "followups": {
+            "source_label": "คำถามซักต่อ",
+            "questions": questions,
+        },
+        "from_vault": {
+            "source_label": "จากคลัง",
+            "available": vault_ok,
+            "vault": str(vault) if vault_ok else None,
+            "items": wiki_items,
+        },
+    }
+
+
+class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
     def log_message(self, format: str, *args) -> None:
         print("[%s] %s" % (self.log_date_time_string(), format % args))
 
+    def _send_json(self, payload: dict, status: int = 200) -> None:
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self) -> None:  # noqa: N802
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+
+        if path == "/api/health":
+            vault = DEFAULT_VAULT
+            self._send_json(
+                {
+                    "ok": True,
+                    "port": PORT,
+                    "vault": str(vault),
+                    "vault_ok": vault.is_dir() and (vault / "wiki").is_dir(),
+                    "map": MAP_PATH.is_file(),
+                    "followups": FOLLOWUPS_PATH.is_file(),
+                }
+            )
+            return
+
+        if path == "/api/knowledge":
+            qs = urllib.parse.parse_qs(parsed.query)
+            region_id = (qs.get("region_id") or [""])[0].strip()
+            if not region_id:
+                self._send_json({"ok": False, "error": "region_id required"}, 400)
+                return
+            try:
+                payload = build_knowledge(region_id)
+            except Exception as exc:  # noqa: BLE001
+                self._send_json({"ok": False, "error": str(exc)}, 500)
+                return
+            status = 200 if payload.get("ok") else 404
+            self._send_json(payload, status)
+            return
+
+        super().do_GET()
+
 
 def main() -> None:
-    handler = functools.partial(Handler)
-    with socketserver.TCPServer(("127.0.0.1", PORT), handler) as httpd:
-        url = f"http://127.0.0.1:{PORT}/web/"
-        print(f"Serving {ROOT}")
-        print(f"Open {url}")
-        try:
-            webbrowser.open(url)
-        except Exception:
-            pass
-        httpd.serve_forever()
+    server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    url = f"http://127.0.0.1:{PORT}/web/"
+    print(f"Serving {ROOT}")
+    print(f"Vault bridge: {DEFAULT_VAULT}")
+    print(f"Open {url}")
+    print("API: /api/health  /api/knowledge?region_id=shoulder_right")
+    try:
+        webbrowser.open(url)
+    except Exception:
+        pass
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopped.")
 
 
 if __name__ == "__main__":

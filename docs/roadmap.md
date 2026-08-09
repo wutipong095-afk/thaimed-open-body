@@ -1,7 +1,7 @@
 # Roadmap — Body Pain 3D
 
 อัปเดตล่าสุด: 2026-08-09  
-สถานะปัจจุบัน: **Phase 2 — MVP 2D** ✅ (+ text resolve พื้นฐาน) → ถัดไป Phase 4 หรือ polish 3
+สถานะปัจจุบัน: **Phase 4 — Knowledge bridge** (บนกิ่ง `feat/phase4-knowledge-bridge`)
 
 > เพื่อการศึกษาและการสื่อสารเท่านั้น — ไม่ใช่การวินิจฉัยทางการแพทย์
 
@@ -15,8 +15,8 @@
 | 1 | Region Map | ~30 โซน + aliases ไทยครบ | ✅ เสร็จ (37 โซน) |
 | 2 | MVP 2D | คลิกหน้า/หลัง + แผงอธิบาย | ✅ เสร็จ |
 | 3 | Text input | พิมพ์อาการ → `region_id` | ✅ พื้นฐานใน UI |
-| 4 | Knowledge bridge | เชื่อมคลัง body-xambrain (local) | 🔲 |
-| 5 | 3D | โมเดล low-poly ใช้ id เดิม | 🔲 |
+| 4 | Knowledge bridge | เชื่อมคลัง body-xambrain (local) | ✅ เสร็จ (อ่าน wiki local) |
+| 5 | 3D | โมเดล low-poly ใช้ id เดิม | 🔲 ถัดไป |
 | 6 | Polish | UX ผู้ป่วย + mobile + deploy ทดลอง | 🔲 |
 
 ---
@@ -78,17 +78,18 @@
 
 ---
 
-## Phase 4 — Knowledge bridge (สัปดาห์ 2–3)
+## Phase 4 — Knowledge bridge ✅
 
-**ผลลัพธ์:** คำอธิบายลึกขึ้นจากคลังท้องถิ่น (optional)
+**ผลลัพธ์:** `/api/knowledge` + แผงแยกแหล่ง · บนกิ่ง `feat/phase4-knowledge-bridge`
 
-- [ ] อ่าน `wiki_refs` → ดึงข้อความจาก vault path ที่ config ได้
-- [ ] หรือเรียก RAG ของ `body-xambrain` (`localhost:8765`) แบบ optional
-- [ ] แยกป้าย: จากแผนที่ / จากคลัง / จากโมเดล
-- [ ] คำถามซักต่อตามโซน (ไม่ใช่ชื่อโรค)
-- [ ] ไม่มี API key → ยังใช้ blurb จาก map ได้
+- [x] อ่าน `wiki_refs` จาก vault local (`BODY_XAMBRAIN_VAULT`, ค่าเริ่มต้น sibling path)
+- [ ] เรียก RAG `localhost:8765` (ยังไม่ทำ — อ่าน markdown ตรงก่อน)
+- [x] แยกป้าย: จากแผนที่ / คำถามซักต่อ / จากคลัง
+- [x] คำถามซักต่อตามโซนใน `data/region-followups.json`
+- [x] ไม่มีคลัง → ยังใช้ blurb จาก map ได้
 
-**เกณฑ์ผ่าน:** โหมด offline (map อย่างเดียว) ยังใช้ได้
+**เกณฑ์ผ่าน:** โหมด map-only ยังใช้ได้ — ✅  
+**API:** `GET /api/health` · `GET /api/knowledge?region_id=…`
 
 ---
 
@@ -138,6 +139,6 @@
 
 ## ลำดับงานถัดไปทันที
 
-1. Phase 4 — bridge ไปคลัง body-xambrain / RAG (optional)
-2. ปรับ SVG ให้ดูเป็นร่างกายมากขึ้น (หรือใส่ภาพพื้น)
-3. ประวัติคำค้นใน session · แล้วค่อย Phase 5 3D
+1. Merge กิ่ง `feat/phase4-knowledge-bridge` เข้า main เมื่อพร้อม
+2. (ทางเลือก) ต่อ RAG chat_server
+3. Phase 5 — 3D หรือปรับ SVG ให้ดูเป็นร่างกายมากขึ้น
