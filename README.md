@@ -36,8 +36,8 @@ repo นี้เก็บแอป + schema แผนที่บริเว�
 | 2 MVP 2D | คลิกหน้า/หลัง | ✅ |
 | 3 Text | พิมพ์อาการ → region | ✅ พื้นฐาน |
 | 4 Knowledge | เชื่อม vault local | ✅ |
-| 5 3D | Three.js procedural | ✅ MVP (กิ่ง feat/phase5-prep) |
-| 6 Polish | mobile / UX | ถัดไป |
+| 5 3D | Three.js procedural | ✅ MVP |
+| 6 Polish | ผู้ป่วย/ผู้เรียน · PWA · session | ✅ (กิ่ง feat/phase6-polish) |
 
 ## โครงสร้าง
 

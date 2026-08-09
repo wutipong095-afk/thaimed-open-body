@@ -1,7 +1,7 @@
 # Roadmap — Body Pain 3D
 
 อัปเดตล่าสุด: 2026-08-09  
-สถานะปัจจุบัน: **Phase 5 — 3D MVP** (บนกิ่ง `feat/phase5-prep`)
+สถานะปัจจุบัน: **Phase 6 — Polish** (บนกิ่ง `feat/phase6-polish`)
 
 > เพื่อการศึกษาและการสื่อสารเท่านั้น — ไม่ใช่การวินิจฉัยทางการแพทย์
 
@@ -17,7 +17,7 @@
 | 3 | Text input | พิมพ์อาการ → `region_id` | ✅ พื้นฐานใน UI |
 | 4 | Knowledge bridge | เชื่อมคลัง body-xambrain (local) | ✅ เสร็จ (อ่าน wiki local) |
 | 5 | 3D | Three.js procedural + region_id | ✅ MVP (ยังไม่มี GLB) |
-| 6 | Polish | UX ผู้ป่วย + mobile + deploy ทดลอง | 🔲 ถัดไป |
+| 6 | Polish | ผู้ป่วย/ผู้เรียน · PWA · session | ✅ บนกิ่ง feat/phase6-polish |
 
 ---
 

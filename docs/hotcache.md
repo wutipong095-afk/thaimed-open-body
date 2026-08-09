@@ -4,23 +4,23 @@
 
 ## สถานะปัจจุบัน
 
-- **Branch:** `feat/phase5-prep` (ห้ามทำงานบน main)
-- **Phase:** 5 3D MVP ✅ → review/merge แล้วค่อย Phase 6
+- **Branch:** `feat/phase6-polish` (ห้ามทำงานบน main)
+- **Phase:** 6 Polish — กำลังทำบนกิ่งนี้
 - **รัน UI:** `python scripts/serve-web.py` → http://127.0.0.1:8787/web/
-- **3D:** ปุ่มโหมด **3D** · ลากหมุน · คลิกกล่องโซน · sync กับแผงเดิม
 
-## Last checkpoint — Phase 5 MVP
+## Last — Phase 6 (in progress)
 
-- `web/js/body3d.js` — Three.js procedural boxes + OrbitControls
-- สลับโหมด 2D / 3D · fallback ถ้าไม่มี WebGL
-- ใช้ `region_id` ชุดเดียวกับ map + knowledge bridge
+- โหมด ผู้ป่วย / ผู้เรียน
+- ประวัติเลือกใน localStorage + ส่งออก `.md`
+- PWA พื้นฐาน (manifest + service worker)
+- `docs/user-guide.md`
 
-## Prev — Phase 4
+## Prev
 
-- `/api/knowledge` · followups · vault excerpts (merged เข้า main แล้ว)
+- Phase 5 3D MVP merged เข้า main (`03879a1`)
+- Phase 4 knowledge bridge อยู่ใน main แล้ว
 
 ## ต้องทำต่อ
 
-1. Merge `feat/phase5-prep` เมื่อผู้ใช้สั่ง
-2. (ทางเลือก) โมเดล GLB แทนกล่อง
-3. Phase 6 polish
+1. Review/merge `feat/phase6-polish` เมื่อผู้ใช้สั่ง
+2. (ทางเลือก) โมเดล GLB / RAG

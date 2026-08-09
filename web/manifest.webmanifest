@@ -1,0 +1,19 @@
+{
+  "name": "Body Pain Map",
+  "short_name": "PainMap",
+  "description": "สื่อสารตำแหน่งอาการเจ็บปวด — เพื่อการศึกษา ไม่ใช่การวินิจฉัย",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1714",
+  "theme_color": "#3dceb0",
+  "lang": "th",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

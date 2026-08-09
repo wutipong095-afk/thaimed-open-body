@@ -98,7 +98,8 @@ body {
 }
 
 .view-btn,
-.mode-btn {
+.mode-btn,
+.role-btn {
   appearance: none;
   border: 0;
   background: transparent;
@@ -111,9 +112,14 @@ body {
 }
 
 .view-btn.is-active,
-.mode-btn.is-active {
+.mode-btn.is-active,
+.role-btn.is-active {
   background: var(--accent-dim);
   color: var(--text);
+}
+
+body.role-patient .learner-only {
+  display: none !important;
 }
 
 .layout {
@@ -393,6 +399,90 @@ body {
 .meta-line code {
   color: var(--accent);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.session-box {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.85rem 0.95rem;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.session-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-family: var(--font-display);
+}
+
+.session-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.ghost-btn {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.ghost-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.session-list {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  max-height: 160px;
+  overflow: auto;
+}
+
+.session-list:empty::after {
+  content: "ยังไม่มีรายการ — เลือกบริเวณบนร่างกายเพื่อเริ่ม";
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.session-list li button {
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 1px solid transparent;
+  background: rgba(61, 206, 176, 0.08);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.session-list li button:hover {
+  border-color: var(--accent);
+}
+
+.session-note {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .disclaimer {

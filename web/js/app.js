@@ -1,5 +1,11 @@
 import { buildAliasIndex, resolveRegionId, needsSideClarify } from "./resolve.js";
 import { Body3D, canUseWebGL } from "./body3d.js";
+import {
+  loadSession,
+  saveSession,
+  pushSessionItem,
+  sessionToNote,
+} from "./session.js";
 
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
 const KNOWLEDGE_URL = "/api/knowledge";
@@ -27,6 +33,9 @@ const els = {
   figure3d: document.getElementById("figure-3d"),
   view2dToggle: document.getElementById("view-2d-toggle"),
   stageHint: document.getElementById("stage-hint"),
+  sessionList: document.getElementById("session-list"),
+  btnExport: document.getElementById("btn-export-session"),
+  btnClear: document.getElementById("btn-clear-session"),
 };
 
 let regionsById = new Map();
@@ -36,6 +45,7 @@ let knowledgeSeq = 0;
 let mode = "2d";
 /** @type {Body3D | null} */
 let body3d = null;
+let session = loadSession();
 
 function fillList(ul, items, emptyLabel) {
   ul.innerHTML = "";
@@ -52,6 +62,34 @@ function setActiveHotspots(regionId) {
     el.classList.toggle("is-active", el.dataset.region === regionId);
   });
   body3d?.setActive(regionId);
+}
+
+function persistSession() {
+  saveSession(session);
+  renderSessionList();
+}
+
+function renderSessionList() {
+  els.sessionList.innerHTML = "";
+  for (const item of session.items) {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = item.name_th;
+    btn.addEventListener("click", () => showRegion(item.id, { skipSession: true }));
+    li.appendChild(btn);
+    els.sessionList.appendChild(li);
+  }
+}
+
+function setRole(role) {
+  session.role = role === "learner" ? "learner" : "patient";
+  document.body.classList.toggle("role-patient", session.role === "patient");
+  document.body.classList.toggle("role-learner", session.role === "learner");
+  document.querySelectorAll(".role-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.role === session.role);
+  });
+  persistSession();
 }
 
 function renderVault(fromVault) {
@@ -122,13 +160,22 @@ function showRegion(regionId, options = {}) {
   els.placeholder.hidden = true;
   els.detailBody.hidden = false;
   els.title.textContent = region.name_th;
-  els.en.textContent = region.name_en || "";
+  els.en.textContent = session.role === "learner" ? region.name_en || "" : "";
   els.blurb.textContent = region.patient_blurb_th || "";
   els.id.textContent = region.id;
   fillList(els.wiki, region.wiki_refs, "—");
   fillList(els.sen, region.sen_refs, "—");
   fillList(els.followups, ["กำลังโหลด…"], "—");
   els.vault.innerHTML = "";
+
+  if (!options.skipSession) {
+    session.items = pushSessionItem(session.items, {
+      id: region.id,
+      name_th: region.name_th,
+      at: new Date().toLocaleString("th-TH"),
+    });
+    persistSession();
+  }
 
   if (options.clarify) {
     showFeedback("ระบุซ้ายหรือขวาให้ชัดเจนได้อีกครั้ง ถ้าตำแหน่งยังไม่ตรง");
@@ -249,6 +296,30 @@ function bindModeToggle() {
   });
 }
 
+function bindRoleToggle() {
+  document.querySelectorAll(".role-btn").forEach((btn) => {
+    btn.addEventListener("click", () => setRole(btn.dataset.role));
+  });
+}
+
+function bindSessionActions() {
+  els.btnClear.addEventListener("click", () => {
+    session.items = [];
+    persistSession();
+  });
+  els.btnExport.addEventListener("click", () => {
+    const text = sessionToNote(session.items);
+    const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `pain-session-${stamp}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
 function bindSearch() {
   els.form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -261,6 +332,15 @@ function bindSearch() {
     const region = regionsById.get(id);
     const clarify = needsSideClarify(q, region);
     showRegion(id, { clarify });
+  });
+}
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {
+      /* offline shell optional */
+    });
   });
 }
 
@@ -279,7 +359,12 @@ async function main() {
   bindHotspots();
   bindViewToggle();
   bindModeToggle();
+  bindRoleToggle();
+  bindSessionActions();
   bindSearch();
+  registerServiceWorker();
+  setRole(session.role);
+  renderSessionList();
   setView("anterior");
   setMode("2d");
   try {

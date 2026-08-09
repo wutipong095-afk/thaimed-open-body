@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3dceb0" />
+  <meta name="description" content="สื่อสารตำแหน่งอาการเจ็บปวด — เพื่อการศึกษา ไม่ใช่การวินิจฉัย" />
   <title>Body Pain Map — สื่อสารตำแหน่งอาการ</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -26,6 +31,10 @@
         <p class="lede">คลิกบนร่างกาย หรือพิมพ์เป็นภาษาไทย — เพื่อสื่อสารกับผู้รักษา ไม่ใช่การวินิจฉัย</p>
       </div>
       <div class="toggles">
+        <div class="view-toggle" role="group" aria-label="บทบาทผู้ใช้">
+          <button type="button" class="role-btn is-active" data-role="patient">ผู้ป่วย</button>
+          <button type="button" class="role-btn" data-role="learner">ผู้เรียน</button>
+        </div>
         <div class="view-toggle" role="group" aria-label="โหมดแสดงผล">
           <button type="button" class="mode-btn is-active" data-mode="2d">2D</button>
           <button type="button" class="mode-btn" data-mode="3d">3D</button>
@@ -166,25 +175,37 @@
               <ul id="detail-followups" class="followups"></ul>
             </section>
 
-            <section class="source-block" id="vault-block">
+            <section class="source-block learner-only" id="vault-block">
               <p class="source-label">จากคลัง</p>
               <p id="vault-status" class="vault-status"></p>
               <div id="detail-vault" class="vault-excerpts"></div>
             </section>
 
-            <div class="meta">
+            <div class="meta learner-only" id="learner-meta">
               <div>
-                <h3>Layer S</h3>
+                <h3>ชั้นโครงสร้าง (S)</h3>
                 <ul id="detail-wiki"></ul>
               </div>
               <div>
-                <h3>Layer T · เส้น</h3>
+                <h3>แพทย์แผนไทย · เส้น</h3>
                 <ul id="detail-sen"></ul>
               </div>
             </div>
-            <p class="meta-line"><span>รหัสโซน</span> <code id="detail-id"></code></p>
+            <p class="meta-line learner-only"><span>รหัสโซน</span> <code id="detail-id"></code></p>
           </div>
         </article>
+
+        <section class="session-box" aria-label="ประวัติในเครื่อง">
+          <div class="session-head">
+            <h3>รายการที่เลือกในเครื่องนี้</h3>
+            <div class="session-actions">
+              <button type="button" id="btn-export-session" class="ghost-btn">บันทึกเป็นไฟล์</button>
+              <button type="button" id="btn-clear-session" class="ghost-btn">ล้าง</button>
+            </div>
+          </div>
+          <ul id="session-list" class="session-list"></ul>
+          <p class="session-note">เก็บเฉพาะในเบราว์เซอร์นี้ · ไม่ส่งขึ้นคลาวด์</p>
+        </section>
 
         <p id="disclaimer" class="disclaimer"></p>
       </aside>
