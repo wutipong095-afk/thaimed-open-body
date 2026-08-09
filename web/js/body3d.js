@@ -137,10 +137,19 @@ export class Body3D {
         if (this.disposed) return;
         this.modelRoot = gltf.scene;
         this._prepareGltf(this.modelRoot);
+        if (this.mode === "boxes") return;
         this.scene.add(this.modelRoot);
-        this._frameObject(this.modelRoot);
+        if (this.clickable.length) {
+          const box = new THREE.Box3();
+          for (const m of this.clickable) box.expandByObject(m);
+          this._frameBox(box);
+        } else {
+          this._frameObject(this.modelRoot);
+        }
         this.mode = "glb";
-        this.onStatus("โมเดล Z-Anatomy พร้อม · ลากหมุน · คลิกกล้ามเนื้อ");
+        this.onStatus(
+          `โมเดล Z-Anatomy พร้อม (${this.clickable.length} ส่วน) · ลากหมุน · คลิกกล้ามเนื้อ`
+        );
       },
       (ev) => {
         if (!ev.total) return;
@@ -156,24 +165,71 @@ export class Body3D {
     );
   }
 
+  _isUiOrLabelMesh(obj) {
+    // Only inspect the mesh's own name — parent collections are often
+    // named "Muscular system" and must NOT hide real muscles.
+    const name = String(obj.name || "");
+    if (
+      /^(navigation|how\s*to|cheatsheet|cheat\s*sheet|venous system|skeletal system|muscular system|lymphoid|cardiovascular|nervous system|visceral systems?|regions of human body|reference lines?|cross section|key colors?|labels?)$/i.test(
+        name.trim()
+      ) ||
+      /navigation|how\s*to|cheatsheet|of human body/i.test(name)
+    ) {
+      return true;
+    }
+    // Drop paper-thin billboards / UI plates
+    if (obj.geometry) {
+      if (!obj.geometry.boundingBox) obj.geometry.computeBoundingBox();
+      const bb = obj.geometry.boundingBox;
+      if (bb) {
+        const s = new THREE.Vector3();
+        bb.getSize(s);
+        const dims = [s.x, s.y, s.z].sort((a, b) => a - b);
+        if (dims[2] > 0.0001 && dims[0] / dims[2] < 0.015) return true;
+        // Tiny decorative bits
+        if (s.x * s.y * s.z < 1e-8) return true;
+      }
+    }
+    return false;
+  }
+
   _prepareGltf(root) {
     this.clickable = [];
     this.byRegion.clear();
+
+    // Hide / discard Z-Anatomy UI boards first so framing uses the body only
+    const uiTrash = [];
+    root.traverse((obj) => {
+      if (!obj.isMesh) return;
+      if (this._isUiOrLabelMesh(obj)) {
+        obj.visible = false;
+        uiTrash.push(obj);
+      }
+    });
+    for (const obj of uiTrash) {
+      obj.removeFromParent();
+    }
+
     root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(root);
+    if (box.isEmpty()) {
+      this.onStatus("โมเดลว่างหลังกรอง UI — ใช้โหมดกล่องแทน");
+      this._buildBoxFallback();
+      this.mode = "boxes";
+      return;
+    }
     const size = new THREE.Vector3();
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
     root.position.sub(center);
-    // Normalize height ~1.7
     const scale = size.y > 0.001 ? 1.7 / size.y : 1;
     root.scale.multiplyScalar(scale);
     root.updateMatrixWorld(true);
     this.modelHeight = 1.7;
 
     root.traverse((obj) => {
-      if (!obj.isMesh) return;
+      if (!obj.isMesh || !obj.visible) return;
       obj.castShadow = false;
       obj.receiveShadow = false;
       if (obj.material) {
@@ -221,12 +277,18 @@ export class Body3D {
   }
 
   _frameObject(obj) {
-    const box = new THREE.Box3().setFromObject(obj);
+    this._frameBox(new THREE.Box3().setFromObject(obj));
+  }
+
+  _frameBox(box) {
+    if (box.isEmpty()) return;
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     this.controls.target.copy(center);
-    const dist = Math.max(size.x, size.y, size.z) * 1.35;
-    this.camera.position.set(center.x, center.y + size.y * 0.05, center.z + dist);
+    const dist = Math.max(size.x, size.y, size.z) * 1.45;
+    this.camera.position.set(center.x, center.y + size.y * 0.02, center.z + dist);
+    this.controls.minDistance = dist * 0.35;
+    this.controls.maxDistance = dist * 4;
     this.controls.update();
   }
 
