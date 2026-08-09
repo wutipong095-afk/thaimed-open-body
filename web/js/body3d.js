@@ -358,8 +358,14 @@ export class Body3D {
     };
     this._onPointerMove = (e) => this._pointerMove(e);
     this._onClick = (e) => this._click(e);
+    this._onPointerLeave = () => {
+      if (this.hoverMesh) this._restyleMesh(this.hoverMesh);
+      this.hoverMesh = null;
+      this.renderer.domElement.style.cursor = "grab";
+    };
     el.addEventListener("pointerdown", this._onPointerDown);
     el.addEventListener("pointermove", this._onPointerMove);
+    el.addEventListener("pointerleave", this._onPointerLeave);
     el.addEventListener("click", this._onClick);
   }
 
@@ -433,7 +439,8 @@ export class Body3D {
           // Blend toward amber so selection stays visible on gray Z-Anatomy mats
           const base = bases[i] != null ? bases[i] : m.color.getHex();
           m.color.setHex(base);
-          m.color.lerp(new THREE.Color(tint), style === "hover" ? 0.35 : 0.55);
+          this._tintColor.setHex(tint);
+          m.color.lerp(this._tintColor, style === "hover" ? 0.35 : 0.55);
         }
       }
       if ("emissive" in m) {
@@ -557,6 +564,7 @@ export class Body3D {
     this._ro?.disconnect();
     this.renderer.domElement.removeEventListener("pointerdown", this._onPointerDown);
     this.renderer.domElement.removeEventListener("pointermove", this._onPointerMove);
+    this.renderer.domElement.removeEventListener("pointerleave", this._onPointerLeave);
     this.renderer.domElement.removeEventListener("click", this._onClick);
     this.controls.dispose();
     this.renderer.dispose();
