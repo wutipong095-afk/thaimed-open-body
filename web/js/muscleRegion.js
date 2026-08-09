@@ -1,9 +1,8 @@
 /**
  * Map Z-Anatomy / Latin muscle names (+ hit position) → region_id
  *
- * Z-Anatomy / Blender glTF often sanitizes "Deltoid.l" → "Deltoidl"
- * and "…muscle.l" → "…musclel". Side must be read from those forms,
- * then refined from mesh/hit X when still ambiguous.
+ * Coordinates (after centering): Y up, model faces camera.
+ * Anatomical left = +X (Z-Anatomy / BodyParts3D), right = −X.
  */
 
 /** @param {"L"|"R"|"mid"} side @param {string} leftId @param {string} rightId @param {string} [midId] */
@@ -13,7 +12,11 @@ function sided(side, leftId, rightId, midId) {
   return midId ?? rightId;
 }
 
-/** @type {{ re: RegExp, region: string | ((side: string) => string) }[]} */
+/**
+ * Lower-limb and specific rules MUST come before bare flexor/extensor arm rules,
+ * or leg flexors (e.g. flexor digitorum longus) map to forearm.
+ * @type {{ re: RegExp, region: string | ((side: string) => string) }[]}
+ */
 const NAME_RULES = [
   { re: /occipito|epicrani|scalp|galea/i, region: "head_cranial" },
   {
@@ -42,18 +45,8 @@ const NAME_RULES = [
     re: /erector spinae|multifidus|iliocostalis|longissimus|spinalis|latissimus/i,
     region: (s) => sided(s, "lumbar_left", "lumbar_right", "lumbar_mid"),
   },
-  {
-    re: /biceps brachii|brachialis|coracobrachialis|triceps|anconeus/i,
-    region: (s) => sided(s, "upper_arm_left", "upper_arm_right"),
-  },
-  {
-    re: /brachioradialis|flexor|extensor|pronator|supinator|palmaris/i,
-    region: (s) => sided(s, "elbow_forearm_left", "elbow_forearm_right"),
-  },
-  {
-    re: /thenar|hypothenar|interosseous|lumbrical|opponens|abductor pollicis|adductor pollicis|palmar|dorsal interosse/i,
-    region: (s) => sided(s, "wrist_hand_left", "wrist_hand_right"),
-  },
+
+  // —— Lower limb first (before arm flexor/extensor) ——
   {
     re: /gluteus|tensor fascia|piriformis|obturator|gemellus|quadratus femoris/i,
     region: (s) => sided(s, "buttock_left", "buttock_right"),
@@ -63,20 +56,35 @@ const NAME_RULES = [
     region: (s) => sided(s, "hip_left", "hip_right"),
   },
   {
-    re: /quadriceps|vastus|rectus femoris|sartorius|adductor|gracilis|pectineus|hamstring|biceps femoris|semitendinosus|semimembranosus/i,
+    re: /quadriceps|vastus|rectus femoris|sartorius|adductor(?!\s*pollicis)|gracilis|pectineus|hamstring|biceps femoris|semitendinosus|semimembranosus|iliotibial/i,
     region: (s) => sided(s, "thigh_left", "thigh_right"),
   },
   {
-    re: /gastrocnemius|soleus|tibialis|peroneus|fibularis|flexor digitorum longus|flexor hallucis|extensor digitorum longus|extensor hallucis|popliteus|plantaris/i,
+    re: /patella|knee|articularis genus|popliteus/i,
+    region: (s) => sided(s, "knee_left", "knee_right"),
+  },
+  {
+    re: /gastrocnemius|soleus|tibialis|peroneus|fibularis|plantaris|flexor digitorum longus|flexor hallucis|extensor digitorum longus|extensor hallucis|triceps surae/i,
     region: (s) => sided(s, "calf_left", "calf_right"),
   },
   {
-    re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi|plantar/i,
+    re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi|plantar|dorsal interosseous.*foot|foot/i,
     region: (s) => sided(s, "ankle_foot_left", "ankle_foot_right"),
   },
+
+  // —— Upper limb ——
   {
-    re: /patella|knee|articularis genus/i,
-    region: (s) => sided(s, "knee_left", "knee_right"),
+    re: /biceps brachii|brachialis|coracobrachialis|triceps brachii|triceps(?!\s*surae)|anconeus/i,
+    region: (s) => sided(s, "upper_arm_left", "upper_arm_right"),
+  },
+  {
+    // Avoid bare flexor|extensor — those match leg muscles too
+    re: /brachioradialis|pronator|supinator|palmaris|flexor carpi|extensor carpi|flexor digitorum superficialis|flexor digitorum profundus|flexor pollicis longus|extensor digitorum(?!\s+longus|\s+brevis)|extensor pollicis|extensor indicis|abductor pollicis longus|flexor digiti minimi brevis of hand/i,
+    region: (s) => sided(s, "elbow_forearm_left", "elbow_forearm_right"),
+  },
+  {
+    re: /thenar|hypothenar|opponens|abductor pollicis(?!\s*longus)|adductor pollicis|palmaris brevis|lumbrical(?!.*foot)|palmar interosse|dorsal interosseous.*hand|interosseous.*hand/i,
+    region: (s) => sided(s, "wrist_hand_left", "wrist_hand_right"),
   },
 ];
 
@@ -97,15 +105,12 @@ export function detectSide(name) {
     if (/\(\s*R\s*\)/i.test(n) || /\bright\b/i.test(n) || /\bdexter\b/i.test(n)) return "R";
     if (/(?:^|[\s._])l$/i.test(n) || /\.l$/i.test(n) || /_l$/i.test(n)) return "L";
     if (/(?:^|[\s._])r$/i.test(n) || /\.r$/i.test(n) || /_r$/i.test(n)) return "R";
-    // "…muscle.l" → "…musclel" after Blender sanitization
     if (/(?:muscle|ligament|tendon)s?l$/i.test(n)) return "L";
     if (/(?:muscle|ligament|tendon)s?r$/i.test(n)) return "R";
   }
 
-  // Natural Latin/English endings that end in l — not a side marker
   if (/(?:al|il|ol|ul|el)$/i.test(compact)) return "mid";
 
-  // Glued side letter: Deltoid.l → Deltoidl
   const glued = compact.match(/^(.*[a-z0-9])([lr])$/i);
   if (glued && glued[1].length >= 4) {
     const base = glued[1];
@@ -116,11 +121,11 @@ export function detectSide(name) {
   return "mid";
 }
 
-/** Body X: negative = left (matches REGION_BOXES / regionFromPosition). */
+/** Anatomical left = +X (model facing camera). */
 export function sideFromPosition(p) {
   if (!p || typeof p.x !== "number" || Number.isNaN(p.x)) return "mid";
-  if (p.x < -0.03) return "L";
-  if (p.x > 0.03) return "R";
+  if (p.x > 0.03) return "L";
+  if (p.x < -0.03) return "R";
   return "mid";
 }
 
@@ -132,7 +137,6 @@ export function sideLabelTh(side) {
 }
 
 /**
- * If region_id encodes side, align it with detected side.
  * @param {string} regionId
  * @param {"L"|"R"|"mid"} side
  */
@@ -169,7 +173,12 @@ export function resolveRegionFromMuscle(meshName, hitPoint = null) {
     let regionId = regionFromPosition(hitPoint);
     regionId = alignRegionSide(regionId, side);
     if (side === "mid") side = sideFromPosition(hitPoint);
-    return { regionId, side, matchedBy: "position", sideSource: sideSource === "none" ? "position" : sideSource };
+    return {
+      regionId,
+      side,
+      matchedBy: "position",
+      sideSource: sideSource === "none" ? "position" : sideSource,
+    };
   }
   return {
     regionId:
@@ -180,11 +189,14 @@ export function resolveRegionFromMuscle(meshName, hitPoint = null) {
   };
 }
 
-/** Rough body map assuming model centered, Y up, roughly unit-scaled to ~1.7 height */
+/**
+ * Position map: anatomical left = +X.
+ * Check lower limb by Y before lateral “arm” band so legs are not labeled as arms.
+ */
 export function regionFromPosition(p) {
   const { x, y, z } = p;
-  const left = x < -0.05;
-  const right = x > 0.05;
+  const left = x > 0.05;
+  const right = x < -0.05;
 
   if (y > 0.88) return z > 0.02 ? "face" : "head_cranial";
   if (y > 0.78) return z >= 0 ? "cervical_anterior" : "cervical_posterior";
@@ -200,7 +212,13 @@ export function regionFromPosition(p) {
   }
 
   if (y > 0.38 && y <= 0.55) {
-    if (Math.abs(x) > 0.2) return left ? "flank_left" : "flank_right";
+    // Raised arms only — not hips/thighs
+    if (Math.abs(x) > 0.32 && y > 0.48) {
+      return left ? "elbow_forearm_left" : "elbow_forearm_right";
+    }
+    if (Math.abs(x) > 0.2 && Math.abs(x) < 0.32) {
+      return left ? "flank_left" : "flank_right";
+    }
     if (z < -0.03) {
       if (left) return "lumbar_left";
       if (right) return "lumbar_right";
@@ -216,17 +234,23 @@ export function regionFromPosition(p) {
     return left ? "hip_left" : right ? "hip_right" : "sacrum_coccyx";
   }
 
-  // Arms (lateral)
-  if (Math.abs(x) > 0.28) {
-    if (y > 0.45) return left ? "upper_arm_left" : "upper_arm_right";
-    if (y > 0.28) return left ? "elbow_forearm_left" : "elbow_forearm_right";
+  // Lower limb (before arms): feet → calf → knee → thigh
+  if (y <= 0.28) {
+    if (y > 0.12) return left ? "thigh_left" : right ? "thigh_right" : "thigh_left";
+    if (y > 0.05) return left ? "knee_left" : right ? "knee_right" : "knee_left";
+    if (y > -0.05) return left ? "calf_left" : right ? "calf_right" : "calf_left";
+    return left ? "ankle_foot_left" : right ? "ankle_foot_right" : "ankle_foot_left";
+  }
+
+  // Arms: high and lateral only
+  if (Math.abs(x) > 0.28 && y > 0.38) {
+    if (y > 0.55) return left ? "upper_arm_left" : "upper_arm_right";
+    if (y > 0.42) return left ? "elbow_forearm_left" : "elbow_forearm_right";
     return left ? "wrist_hand_left" : "wrist_hand_right";
   }
 
   if (y > 0.12) return left ? "thigh_left" : right ? "thigh_right" : "thigh_left";
-  if (y > 0.05) return left ? "knee_left" : right ? "knee_right" : "knee_left";
-  if (y > -0.05) return left ? "calf_left" : right ? "calf_right" : "calf_left";
-  return left ? "ankle_foot_left" : right ? "ankle_foot_right" : "ankle_foot_left";
+  return left ? "hip_left" : right ? "hip_right" : "sacrum_coccyx";
 }
 
 export function cleanMuscleLabel(name) {
@@ -242,7 +266,6 @@ export function cleanMuscleLabel(name) {
   n = n.replace(/(muscle|ligament|tendon)s?r$/gi, "$1");
   n = n.replace(/\s+[lr]$/i, "");
 
-  // Deltoidl → Deltoid when side came from glued letter
   if (side === "L" || side === "R") {
     const compact = n.replace(/\s+/g, "");
     const gluedTail =
