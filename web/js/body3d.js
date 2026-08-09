@@ -166,38 +166,54 @@ export class Body3D {
   }
 
   _isUiOrLabelMesh(obj) {
-    // Only inspect the mesh's own name — parent collections are often
-    // named "Muscular system" and must NOT hide real muscles.
-    const name = String(obj.name || "");
+    // Z-Anatomy: collection boards end with ".g"; real muscles use ".l"/".r".
+    // Only use the mesh's own name — never parent "Muscular system".
+    const name = String(obj.name || "").trim();
+    if (!name) return false;
+    if (/\.g$/i.test(name)) return true;
     if (
-      /^(navigation|how\s*to|cheatsheet|cheat\s*sheet|venous system|skeletal system|muscular system|lymphoid|cardiovascular|nervous system|visceral systems?|regions of human body|reference lines?|cross section|key colors?|labels?)$/i.test(
-        name.trim()
+      /^(navigation|how\s*to|cheatsheet|cheat\s*sheet|take a picture|general terms|movements|reference (lines|planes)|cross section)/i.test(
+        name
       ) ||
-      /navigation|how\s*to|cheatsheet|of human body/i.test(name)
+      /how\s*to|cheatsheet|navigation\.st/i.test(name)
     ) {
       return true;
     }
-    // Drop paper-thin billboards / UI plates
-    if (obj.geometry) {
-      if (!obj.geometry.boundingBox) obj.geometry.computeBoundingBox();
-      const bb = obj.geometry.boundingBox;
-      if (bb) {
-        const s = new THREE.Vector3();
-        bb.getSize(s);
-        const dims = [s.x, s.y, s.z].sort((a, b) => a - b);
-        if (dims[2] > 0.0001 && dims[0] / dims[2] < 0.015) return true;
-        // Tiny decorative bits
-        if (s.x * s.y * s.z < 1e-8) return true;
+    return false;
+  }
+
+  _keepMuscularOnly(root) {
+    // Default scene roots include every organ system + UI boards.
+    // Keep Muscular system only so framing/clicks match the pain-map use case.
+    const keep = [];
+    const drop = [];
+    for (const child of [...root.children]) {
+      if (/^muscular system/i.test(String(child.name || "").trim())) {
+        keep.push(child);
+      } else {
+        drop.push(child);
       }
     }
-    return false;
+    if (!keep.length) return false;
+    for (const child of drop) {
+      child.visible = false;
+      child.removeFromParent();
+    }
+    return true;
   }
 
   _prepareGltf(root) {
     this.clickable = [];
     this.byRegion.clear();
 
-    // Hide / discard Z-Anatomy UI boards first so framing uses the body only
+    if (!this._keepMuscularOnly(root)) {
+      this.onStatus("ไม่พบ Muscular system ใน GLB — ใช้โหมดกล่องแทน");
+      this._buildBoxFallback();
+      this.mode = "boxes";
+      return;
+    }
+
+    // Drop collection title boards / HOW TO plates inside the kept tree
     const uiTrash = [];
     root.traverse((obj) => {
       if (!obj.isMesh) return;
