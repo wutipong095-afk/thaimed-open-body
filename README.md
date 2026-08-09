@@ -35,9 +35,9 @@ repo นี้เก็บแอป + schema แผนที่บริเว�
 | 1 Region Map | 37 โซน + aliases | ✅ |
 | 2 MVP 2D | คลิกหน้า/หลัง | ✅ |
 | 3 Text | พิมพ์อาการ → region | ✅ พื้นฐาน |
-| 4 Knowledge | เชื่อม vault local | ✅ (กิ่ง feat/phase4-knowledge-bridge) |
-| 5 3D | Three.js + mesh ตาม id | ถัดไป |
-| 6 Polish | mobile / UX | รอ |
+| 4 Knowledge | เชื่อม vault local | ✅ |
+| 5 3D | Three.js procedural | ✅ MVP (กิ่ง feat/phase5-prep) |
+| 6 Polish | mobile / UX | ถัดไป |
 
 ## โครงสร้าง
 

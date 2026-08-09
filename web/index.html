@@ -8,6 +8,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
   <div class="page">
@@ -17,15 +25,21 @@
         <h1>ชี้ตำแหน่งที่เจ็บหรือเมื่อย</h1>
         <p class="lede">คลิกบนร่างกาย หรือพิมพ์เป็นภาษาไทย — เพื่อสื่อสารกับผู้รักษา ไม่ใช่การวินิจฉัย</p>
       </div>
-      <div class="view-toggle" role="group" aria-label="มุมมองร่างกาย">
-        <button type="button" class="view-btn is-active" data-view="anterior">ด้านหน้า</button>
-        <button type="button" class="view-btn" data-view="posterior">ด้านหลัง</button>
+      <div class="toggles">
+        <div class="view-toggle" role="group" aria-label="โหมดแสดงผล">
+          <button type="button" class="mode-btn is-active" data-mode="2d">2D</button>
+          <button type="button" class="mode-btn" data-mode="3d">3D</button>
+        </div>
+        <div id="view-2d-toggle" class="view-toggle" role="group" aria-label="มุมมองร่างกาย">
+          <button type="button" class="view-btn is-active" data-view="anterior">ด้านหน้า</button>
+          <button type="button" class="view-btn" data-view="posterior">ด้านหลัง</button>
+        </div>
       </div>
     </header>
 
     <main class="layout">
       <section class="stage" aria-label="แผนที่ร่างกาย">
-        <div class="figure-wrap">
+        <div id="figure-2d" class="figure-wrap">
           <!-- Anterior -->
           <svg id="view-anterior" class="body-svg is-visible" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหน้า" aria-hidden="false">
             <defs>
@@ -122,7 +136,8 @@
             <rect class="hotspot" data-region="ankle_foot_right" x="122" y="446" width="40" height="28" rx="8"/>
           </svg>
         </div>
-        <p class="hint">แตะหรือคลิกบริเวณที่เจ็บ · สลับด้านหน้า/ด้านหลังด้านบน</p>
+        <div id="figure-3d" class="figure-wrap figure-3d" hidden></div>
+        <p id="stage-hint" class="hint">แตะหรือคลิกบริเวณที่เจ็บ · สลับด้านหน้า/ด้านหลังด้านบน</p>
       </section>
 
       <aside class="panel">

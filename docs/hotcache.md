@@ -4,30 +4,23 @@
 
 ## สถานะปัจจุบัน
 
-- **Branch:** `feat/phase4-knowledge-bridge`
-- **Phase:** 4 Knowledge bridge ✅ → ถัดไป Phase 5 หรือ merge เข้า main
-- **Repo:** https://github.com/wutipong095-afk/body-pain-3d (private)
+- **Branch:** `feat/phase5-prep` (ห้ามทำงานบน main)
+- **Phase:** 5 3D MVP ✅ → review/merge แล้วค่อย Phase 6
 - **รัน UI:** `python scripts/serve-web.py` → http://127.0.0.1:8787/web/
-- **Vault path:** `BODY_XAMBRAIN_VAULT` หรือค่าเริ่มต้น `D:\obsidian\body-xambrain`
+- **3D:** ปุ่มโหมด **3D** · ลากหมุน · คลิกกล่องโซน · sync กับแผงเดิม
 
-## Last checkpoint (2026-08-09) — Phase 4
+## Last checkpoint — Phase 5 MVP
 
-- กิ่งใหม่ `feat/phase4-knowledge-bridge`
-- `GET /api/knowledge?region_id=` ดึง blurb + followups + wiki excerpt
-- `data/region-followups.json` คำถามซักต่อทุกโซน
-- UI แยกป้าย: จากแผนที่ / คำถามซักต่อ / จากคลัง
-- ไม่มีคลัง → map-only ยังใช้ได้
+- `web/js/body3d.js` — Three.js procedural boxes + OrbitControls
+- สลับโหมด 2D / 3D · fallback ถ้าไม่มี WebGL
+- ใช้ `region_id` ชุดเดียวกับ map + knowledge bridge
 
-## Prev — Phase 2/3 + fix ด้านหลัง
+## Prev — Phase 4
 
-- MVP 2D · text resolve · แก้ SVG `hidden` → class `is-visible`
+- `/api/knowledge` · followups · vault excerpts (merged เข้า main แล้ว)
 
 ## ต้องทำต่อ
 
-1. Review/merge กิ่ง Phase 4
-2. (ทางเลือก) ต่อ RAG chat_server
-3. Phase 5 — 3D
-
-## Open questions
-
-- โมเดล 3D จะหาจากไหน (license + แยก mesh)?
+1. Merge `feat/phase5-prep` เมื่อผู้ใช้สั่ง
+2. (ทางเลือก) โมเดล GLB แทนกล่อง
+3. Phase 6 polish

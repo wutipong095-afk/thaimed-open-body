@@ -1,7 +1,7 @@
 # Roadmap — Body Pain 3D
 
 อัปเดตล่าสุด: 2026-08-09  
-สถานะปัจจุบัน: **Phase 4 — Knowledge bridge** (บนกิ่ง `feat/phase4-knowledge-bridge`)
+สถานะปัจจุบัน: **Phase 5 — 3D MVP** (บนกิ่ง `feat/phase5-prep`)
 
 > เพื่อการศึกษาและการสื่อสารเท่านั้น — ไม่ใช่การวินิจฉัยทางการแพทย์
 
@@ -16,8 +16,8 @@
 | 2 | MVP 2D | คลิกหน้า/หลัง + แผงอธิบาย | ✅ เสร็จ |
 | 3 | Text input | พิมพ์อาการ → `region_id` | ✅ พื้นฐานใน UI |
 | 4 | Knowledge bridge | เชื่อมคลัง body-xambrain (local) | ✅ เสร็จ (อ่าน wiki local) |
-| 5 | 3D | โมเดล low-poly ใช้ id เดิม | 🔲 ถัดไป |
-| 6 | Polish | UX ผู้ป่วย + mobile + deploy ทดลอง | 🔲 |
+| 5 | 3D | Three.js procedural + region_id | ✅ MVP (ยังไม่มี GLB) |
+| 6 | Polish | UX ผู้ป่วย + mobile + deploy ทดลอง | 🔲 ถัดไป |
 
 ---
 
@@ -93,17 +93,18 @@
 
 ---
 
-## Phase 5 — 3D (สัปดาห์ 3–5)
+## Phase 5 — 3D ✅ (MVP procedural)
 
-**ผลลัพธ์:** หมุนดูร่างกาย คลิก mesh ตาม `region_id` เดิม
+**ผลลัพธ์:** โหมด 3D ใน UI · บนกิ่ง `feat/phase5-prep`
 
-- [ ] เลือกโมเดล low-poly + ใบอนุญาตชัด
-- [ ] แบ่ง hit mesh / invisible colliders ตาม region map
-- [ ] Three.js (หรือ R3F) ใน `web/`
-- [ ] sync ไฮไลต์กับแผงอธิบาย + text resolver
-- [ ] fallback กลับ 2D ถ้าเครื่องช้า
+- [x] ใช้กล่อง low-poly สร้างเอง (ยังไม่โหลด GLB — ไม่ติด license)
+- [x] hit mesh ตาม `region_id` ชุดเดียวกับแผนที่
+- [x] Three.js + OrbitControls (`web/js/body3d.js`, CDN importmap)
+- [x] sync ไฮไลต์กับแผงอธิบาย + text resolver
+- [x] fallback / สลับกลับ 2D · ถ้า WebGL ไม่ได้จะบังคับ 2D
 
-**เกณฑ์ผ่าน:** คลิกใน 3D ได้ผลเหมือน 2D สำหรับโซนชุดเดียวกัน
+**เกณฑ์ผ่าน:** คลิกใน 3D เปิดแผงเดียวกับ 2D — ✅  
+**ถัดไป (optional):** เปลี่ยนเป็นโมเดล anatomy ที่มีใบอนุญาตชัด
 
 ---
 
@@ -139,6 +140,6 @@
 
 ## ลำดับงานถัดไปทันที
 
-1. Merge กิ่ง `feat/phase4-knowledge-bridge` เข้า main เมื่อพร้อม
-2. (ทางเลือก) ต่อ RAG chat_server
-3. Phase 5 — 3D หรือปรับ SVG ให้ดูเป็นร่างกายมากขึ้น
+1. Review/merge กิ่ง `feat/phase5-prep` เข้า main เมื่อพร้อม
+2. (ทางเลือก) โมเดล GLB แทนกล่อง · หรือต่อ RAG
+3. Phase 6 — Polish

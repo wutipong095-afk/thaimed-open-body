@@ -1,4 +1,5 @@
 import { buildAliasIndex, resolveRegionId, needsSideClarify } from "./resolve.js";
+import { Body3D, canUseWebGL } from "./body3d.js";
 
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
 const KNOWLEDGE_URL = "/api/knowledge";
@@ -22,12 +23,19 @@ const els = {
   feedback: document.getElementById("search-feedback"),
   viewAnterior: document.getElementById("view-anterior"),
   viewPosterior: document.getElementById("view-posterior"),
+  figure2d: document.getElementById("figure-2d"),
+  figure3d: document.getElementById("figure-3d"),
+  view2dToggle: document.getElementById("view-2d-toggle"),
+  stageHint: document.getElementById("stage-hint"),
 };
 
 let regionsById = new Map();
 let aliasIndex = [];
 let activeId = null;
 let knowledgeSeq = 0;
+let mode = "2d";
+/** @type {Body3D | null} */
+let body3d = null;
 
 function fillList(ul, items, emptyLabel) {
   ul.innerHTML = "";
@@ -43,6 +51,7 @@ function setActiveHotspots(regionId) {
   document.querySelectorAll(".hotspot").forEach((el) => {
     el.classList.toggle("is-active", el.dataset.region === regionId);
   });
+  body3d?.setActive(regionId);
 }
 
 function renderVault(fromVault) {
@@ -127,7 +136,7 @@ function showRegion(regionId, options = {}) {
     hideFeedback();
   }
 
-  maybeSwitchViewForRegion(regionId);
+  if (mode === "2d") maybeSwitchViewForRegion(regionId);
   loadKnowledge(regionId);
 }
 
@@ -168,6 +177,51 @@ function currentView() {
   return els.viewPosterior.classList.contains("is-visible") ? "posterior" : "anterior";
 }
 
+function ensure3d() {
+  if (body3d) return true;
+  if (!canUseWebGL()) {
+    showFeedback("เครื่องนี้ไม่รองรับ WebGL — ใช้โหมด 2D แทน");
+    return false;
+  }
+  try {
+    body3d = new Body3D(els.figure3d, {
+      onSelect: (regionId) => showRegion(regionId),
+    });
+    if (activeId) body3d.setActive(activeId);
+    return true;
+  } catch (err) {
+    console.error(err);
+    showFeedback("เปิด 3D ไม่ได้ — กลับไปโหมด 2D");
+    return false;
+  }
+}
+
+function setMode(next) {
+  if (next === "3d") {
+    if (!ensure3d()) {
+      next = "2d";
+    }
+  }
+
+  mode = next;
+  const is3d = mode === "3d";
+  els.figure2d.hidden = is3d;
+  els.figure3d.hidden = !is3d;
+  els.view2dToggle.hidden = is3d;
+  els.stageHint.textContent = is3d
+    ? "ลากเพื่อหมุน · คลิกกล่องบริเวณที่เจ็บ · สลับกลับ 2D ได้ด้านบน"
+    : "แตะหรือคลิกบริเวณที่เจ็บ · สลับด้านหน้า/ด้านหลังด้านบน";
+
+  document.querySelectorAll(".mode-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.mode === mode);
+  });
+
+  if (is3d) {
+    body3d?.resize();
+    if (activeId) body3d?.setActive(activeId);
+  }
+}
+
 function bindHotspots() {
   document.querySelectorAll(".hotspot").forEach((el) => {
     el.setAttribute("tabindex", "0");
@@ -186,6 +240,12 @@ function bindHotspots() {
 function bindViewToggle() {
   document.querySelectorAll(".view-btn").forEach((btn) => {
     btn.addEventListener("click", () => setView(btn.dataset.view));
+  });
+}
+
+function bindModeToggle() {
+  document.querySelectorAll(".mode-btn").forEach((btn) => {
+    btn.addEventListener("click", () => setMode(btn.dataset.mode));
   });
 }
 
@@ -218,8 +278,10 @@ async function loadMap() {
 async function main() {
   bindHotspots();
   bindViewToggle();
+  bindModeToggle();
   bindSearch();
   setView("anterior");
+  setMode("2d");
   try {
     await loadMap();
   } catch (err) {

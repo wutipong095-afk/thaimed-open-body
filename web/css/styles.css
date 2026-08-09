@@ -78,6 +78,13 @@ body {
   line-height: 1.45;
 }
 
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+}
+
 .view-toggle {
   display: inline-flex;
   padding: 4px;
@@ -86,7 +93,12 @@ body {
   background: rgba(0, 0, 0, 0.22);
 }
 
-.view-btn {
+.view-toggle[hidden] {
+  display: none !important;
+}
+
+.view-btn,
+.mode-btn {
   appearance: none;
   border: 0;
   background: transparent;
@@ -98,7 +110,8 @@ body {
   cursor: pointer;
 }
 
-.view-btn.is-active {
+.view-btn.is-active,
+.mode-btn.is-active {
   background: var(--accent-dim);
   color: var(--text);
 }
@@ -130,6 +143,24 @@ body {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
     rgba(0, 0, 0, 0.18);
+}
+
+.figure-wrap[hidden] {
+  display: none !important;
+}
+
+.figure-3d {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.figure-3d canvas {
+  display: block;
+  width: 100%;
+  height: 560px;
+  touch-action: none;
 }
 
 .body-svg {
