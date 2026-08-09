@@ -1,5 +1,6 @@
 import { buildAliasIndex, resolveRegionId, needsSideClarify } from "./resolve.js";
 import { Body3D, canUseWebGL } from "./body3d.js";
+import { formatMuscleLabelThEn } from "./muscleNames.js";
 import {
   loadSession,
   saveSession,
@@ -17,6 +18,7 @@ const els = {
   title: document.getElementById("detail-title"),
   en: document.getElementById("detail-en"),
   muscle: document.getElementById("detail-muscle"),
+  muscleEn: document.getElementById("detail-muscle-en"),
   blurb: document.getElementById("detail-blurb"),
   modelCredit: document.getElementById("model-credit"),
   followups: document.getElementById("detail-followups"),
@@ -168,18 +170,28 @@ function showRegion(regionId, options = {}) {
   els.detailBody.hidden = false;
   els.title.textContent = region.name_th;
   els.en.textContent = session.role === "learner" ? region.name_en || "" : "";
+  let muscleLabel = null;
   if (options.muscleName) {
+    muscleLabel = formatMuscleLabelThEn(options.muscleName, options.side || "mid");
     els.muscle.hidden = false;
-    const side =
-      options.side === "L" ? " · ซ้าย" : options.side === "R" ? " · ขวา" : "";
-    els.muscle.textContent = `กล้ามเนื้อที่แตะ: ${options.muscleName}${side}`;
+    els.muscle.textContent = `กล้ามเนื้อที่แตะ: ${muscleLabel.lineTh}`;
+    if (els.muscleEn) {
+      els.muscleEn.hidden = false;
+      els.muscleEn.textContent = muscleLabel.la
+        ? `${muscleLabel.en} · ${muscleLabel.la}`
+        : muscleLabel.en;
+    }
   } else {
     els.muscle.hidden = true;
     els.muscle.textContent = "";
+    if (els.muscleEn) {
+      els.muscleEn.hidden = true;
+      els.muscleEn.textContent = "";
+    }
   }
   const blurb = region.patient_blurb_th || "";
-  els.blurb.textContent = options.muscleName
-    ? `${blurb}\n\n(จากกล้ามเนื้อ: ${options.muscleName})`
+  els.blurb.textContent = muscleLabel
+    ? `${blurb}\n\n(จากกล้ามเนื้อ: ${muscleLabel.lineFull})`
     : blurb;
   els.id.textContent = region.id;
   fillList(els.wiki, region.wiki_refs, "—");
@@ -188,8 +200,8 @@ function showRegion(regionId, options = {}) {
   els.vault.innerHTML = "";
 
   if (!options.skipSession) {
-    const label = options.muscleName
-      ? `${region.name_th} · ${options.muscleName}`
+    const label = muscleLabel
+      ? `${region.name_th} · ${muscleLabel.lineTh}`
       : region.name_th;
     session.items = pushSessionItem(session.items, {
       id: region.id,

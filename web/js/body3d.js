@@ -11,6 +11,7 @@ import {
   regionFromPosition,
   cleanMuscleLabel,
 } from "./muscleRegion.js";
+import { formatMuscleLabelThEn } from "./muscleNames.js";
 
 const MODEL_URL = new URL("../models/zanatomy-muscles-web.glb", import.meta.url).href;
 
@@ -436,11 +437,12 @@ export class Body3D {
     mesh.userData.regionId = regionId;
     mesh.userData.side = side;
 
-    const sideTh = side === "L" ? "ซ้าย" : side === "R" ? "ขวา" : "";
+    const named = formatMuscleLabelThEn(rawName || muscleName, side);
     this.setActive(regionId, mesh);
-    this.onStatus(sideTh ? `เลือก: ${muscleName} · ${sideTh}` : `เลือก: ${muscleName}`);
+    this.onStatus(`เลือก: ${named.lineTh}`);
     this.onSelect(regionId, {
-      muscleName,
+      muscleName: rawName || muscleName,
+      muscleLabel: named,
       side,
       matchedBy,
       mesh,
