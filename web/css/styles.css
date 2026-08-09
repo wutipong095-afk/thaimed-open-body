@@ -133,13 +133,20 @@ body {
 }
 
 .body-svg {
+  display: none;
   width: min(100%, 320px);
   height: auto;
   touch-action: manipulation;
+  pointer-events: none;
 }
 
-.body-svg[hidden] {
-  display: none;
+.body-svg.is-visible {
+  display: block;
+  pointer-events: auto;
+}
+
+.body-svg .silhouette {
+  pointer-events: none;
 }
 
 .hotspot {
@@ -148,6 +155,7 @@ body {
   stroke-width: 1;
   cursor: pointer;
   transition: fill 120ms ease, stroke 120ms ease;
+  pointer-events: all;
 }
 
 .hotspot:hover,

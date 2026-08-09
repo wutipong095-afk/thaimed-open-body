@@ -73,10 +73,10 @@ function showRegion(regionId, options = {}) {
 function maybeSwitchViewForRegion(regionId) {
   const onAnterior = els.viewAnterior.querySelector(`[data-region="${regionId}"]`);
   const onPosterior = els.viewPosterior.querySelector(`[data-region="${regionId}"]`);
-  const anteriorVisible = !els.viewAnterior.hidden;
-  if (anteriorVisible && !onAnterior && onPosterior) {
+  const view = currentView();
+  if (view === "anterior" && !onAnterior && onPosterior) {
     setView("posterior");
-  } else if (!anteriorVisible && !onPosterior && onAnterior) {
+  } else if (view === "posterior" && !onPosterior && onAnterior) {
     setView("anterior");
   }
 }
@@ -93,14 +93,19 @@ function hideFeedback() {
 
 function setView(view) {
   const anterior = view === "anterior";
-  els.viewAnterior.hidden = !anterior;
-  els.viewPosterior.hidden = anterior;
+  // SVG + HTML `hidden` is unreliable across browsers — toggle class only
   els.viewAnterior.classList.toggle("is-visible", anterior);
   els.viewPosterior.classList.toggle("is-visible", !anterior);
+  els.viewAnterior.setAttribute("aria-hidden", anterior ? "false" : "true");
+  els.viewPosterior.setAttribute("aria-hidden", anterior ? "true" : "false");
   document.querySelectorAll(".view-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.view === view);
   });
   if (activeId) setActiveHotspots(activeId);
+}
+
+function currentView() {
+  return els.viewPosterior.classList.contains("is-visible") ? "posterior" : "anterior";
 }
 
 function bindHotspots() {
@@ -154,6 +159,7 @@ async function main() {
   bindHotspots();
   bindViewToggle();
   bindSearch();
+  setView("anterior");
   try {
     await loadMap();
   } catch (err) {

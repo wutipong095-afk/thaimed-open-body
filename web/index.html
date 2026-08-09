@@ -27,20 +27,22 @@
       <section class="stage" aria-label="แผนที่ร่างกาย">
         <div class="figure-wrap">
           <!-- Anterior -->
-          <svg id="view-anterior" class="body-svg is-visible" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหน้า">
+          <svg id="view-anterior" class="body-svg is-visible" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหน้า" aria-hidden="false">
             <defs>
               <linearGradient id="skinA" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#d8e4df"/>
                 <stop offset="100%" stop-color="#b7c9c2"/>
               </linearGradient>
             </defs>
-            <!-- silhouette hint -->
-            <ellipse cx="110" cy="38" rx="28" ry="32" fill="url(#skinA)" opacity="0.35"/>
-            <rect x="98" y="68" width="24" height="22" rx="8" fill="url(#skinA)" opacity="0.35"/>
-            <path d="M70 95 h80 l18 55 v70 H52 v-70 z" fill="url(#skinA)" opacity="0.3"/>
-            <path d="M52 218 h116 l10 90 H42 z" fill="url(#skinA)" opacity="0.28"/>
-            <rect x="58" y="308" width="40" height="110" rx="16" fill="url(#skinA)" opacity="0.28"/>
-            <rect x="122" y="308" width="40" height="110" rx="16" fill="url(#skinA)" opacity="0.28"/>
+            <g class="silhouette" aria-hidden="true">
+              <ellipse cx="110" cy="38" rx="28" ry="32" fill="url(#skinA)" opacity="0.35"/>
+              <rect x="98" y="68" width="24" height="22" rx="8" fill="url(#skinA)" opacity="0.35"/>
+              <path d="M70 95 h80 l18 55 v70 H52 v-70 z" fill="url(#skinA)" opacity="0.3"/>
+              <path d="M52 218 h116 l10 90 H42 z" fill="url(#skinA)" opacity="0.28"/>
+              <rect x="58" y="308" width="40" height="110" rx="16" fill="url(#skinA)" opacity="0.28"/>
+              <rect x="122" y="308" width="40" height="110" rx="16" fill="url(#skinA)" opacity="0.28"/>
+              <text x="110" y="500" text-anchor="middle" fill="rgba(232,242,237,0.35)" font-size="11" font-family="Sarabun, sans-serif">มุมหน้า</text>
+            </g>
 
             <!-- hotspots -->
             <ellipse class="hotspot" data-region="head_cranial" cx="110" cy="28" rx="26" ry="18"/>
@@ -73,19 +75,23 @@
           </svg>
 
           <!-- Posterior -->
-          <svg id="view-posterior" class="body-svg" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหลัง" hidden>
+          <svg id="view-posterior" class="body-svg" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหลัง" aria-hidden="true">
             <defs>
               <linearGradient id="skinB" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#d8e4df"/>
                 <stop offset="100%" stop-color="#b7c9c2"/>
               </linearGradient>
             </defs>
-            <ellipse cx="110" cy="38" rx="28" ry="32" fill="url(#skinB)" opacity="0.35"/>
-            <rect x="98" y="68" width="24" height="22" rx="8" fill="url(#skinB)" opacity="0.35"/>
-            <path d="M70 95 h80 l18 55 v90 H52 v-90 z" fill="url(#skinB)" opacity="0.3"/>
-            <path d="M52 238 h116 l8 55 H44 z" fill="url(#skinB)" opacity="0.28"/>
-            <rect x="58" y="308" width="40" height="110" rx="16" fill="url(#skinB)" opacity="0.28"/>
-            <rect x="122" y="308" width="40" height="110" rx="16" fill="url(#skinB)" opacity="0.28"/>
+            <g class="silhouette" aria-hidden="true">
+              <ellipse cx="110" cy="38" rx="28" ry="32" fill="url(#skinB)" opacity="0.35"/>
+              <rect x="98" y="68" width="24" height="22" rx="8" fill="url(#skinB)" opacity="0.35"/>
+              <path d="M70 95 h80 l18 55 v90 H52 v-90 z" fill="url(#skinB)" opacity="0.3"/>
+              <path d="M52 238 h116 l8 55 H44 z" fill="url(#skinB)" opacity="0.28"/>
+              <rect x="58" y="308" width="40" height="110" rx="16" fill="url(#skinB)" opacity="0.28"/>
+              <rect x="122" y="308" width="40" height="110" rx="16" fill="url(#skinB)" opacity="0.28"/>
+              <!-- visual cue: back is not the face view -->
+              <text x="110" y="500" text-anchor="middle" fill="rgba(232,242,237,0.35)" font-size="11" font-family="Sarabun, sans-serif">มุมหลัง</text>
+            </g>
 
             <ellipse class="hotspot" data-region="head_cranial" cx="110" cy="30" rx="26" ry="20"/>
             <rect class="hotspot" data-region="cervical_posterior" x="96" y="64" width="28" height="24" rx="7"/>
