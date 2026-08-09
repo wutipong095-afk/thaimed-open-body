@@ -16,8 +16,11 @@ import { formatMuscleLabelThEn } from "./muscleNames.js";
 const MODEL_URL = new URL("../models/zanatomy-muscles-web.glb", import.meta.url).href;
 
 const COLOR_IDLE = 0x3a6b5c;
-const COLOR_HOVER = 0x4fd0b0;
+const COLOR_HOVER = 0x5ee0c0;
+/** Latest click — bright amber */
 const COLOR_ACTIVE = 0xffc45c;
+/** Previously selected — keep warm tint until session clear */
+const COLOR_SELECTED = 0xe8a84a;
 
 /** @typedef {{ id: string, pos: [number, number, number], size: [number, number, number] }} RegionBox */
 
@@ -78,6 +81,8 @@ export class Body3D {
     this.activeId = null;
     this.activeMesh = null;
     this.hoverMesh = null;
+    /** @type {Set<THREE.Mesh>} meshes that keep selection color */
+    this.selectedMeshes = new Set();
     this.raf = 0;
     this.disposed = false;
     this.mode = "loading"; // loading | glb | boxes
@@ -106,6 +111,7 @@ export class Body3D {
 
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
+    this._tintColor = new THREE.Color();
 
     this._addLights();
     this._bindEvents();
@@ -370,40 +376,89 @@ export class Body3D {
     return hits[0] || null;
   }
 
-  _setMeshHighlight(mesh, on, colorHex) {
+  _mats(mesh) {
+    if (!mesh?.material) return [];
+    return Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+  }
+
+  _captureBaseAppearance(mesh) {
+    if (!mesh || mesh.userData.baseCaptured) return;
+    const mats = this._mats(mesh);
+    mesh.userData.baseColors = mats.map((m) => (m?.color ? m.color.getHex() : null));
+    mesh.userData.baseEmissives = mats.map((m) =>
+      m && "emissive" in m && m.emissive ? m.emissive.getHex() : 0x000000
+    );
+    mesh.userData.baseEmissiveIntensities = mats.map((m) =>
+      m && "emissiveIntensity" in m ? m.emissiveIntensity ?? 0 : 0
+    );
+    mesh.userData.baseCaptured = true;
+  }
+
+  /**
+   * @param {THREE.Mesh} mesh
+   * @param {"idle"|"hover"|"selected"|"active"} style
+   */
+  _applyMeshStyle(mesh, style) {
     if (!mesh?.material) return;
-    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-    for (const m of mats) {
+    this._captureBaseAppearance(mesh);
+    const mats = this._mats(mesh);
+    const bases = mesh.userData.baseColors || [];
+    const baseE = mesh.userData.baseEmissives || [];
+    const baseEi = mesh.userData.baseEmissiveIntensities || [];
+
+    for (let i = 0; i < mats.length; i++) {
+      const m = mats[i];
       if (!m) continue;
-      if (m.color && this.mode === "boxes") {
-        m.color.setHex(on ? colorHex : COLOR_IDLE);
+
+      if (style === "idle") {
+        if (m.color) {
+          const bc = bases[i];
+          m.color.setHex(bc != null ? bc : this.mode === "boxes" ? COLOR_IDLE : 0x888888);
+        }
+        if ("emissive" in m && m.emissive) {
+          m.emissive.setHex(baseE[i] ?? 0x000000);
+          m.emissiveIntensity = baseEi[i] ?? 0;
+        }
         continue;
       }
-      if (!("emissive" in m)) continue;
-      if (on) {
-        if (mesh.userData.baseEmissive == null) {
-          mesh.userData.baseEmissive = m.emissive?.getHex?.() ?? 0x000000;
+
+      const tint =
+        style === "hover" ? COLOR_HOVER : style === "active" ? COLOR_ACTIVE : COLOR_SELECTED;
+      const eIntensity = style === "hover" ? 0.45 : style === "active" ? 0.85 : 0.7;
+
+      if (m.color) {
+        if (this.mode === "boxes") {
+          m.color.setHex(tint);
+        } else {
+          // Blend toward amber so selection stays visible on gray Z-Anatomy mats
+          const base = bases[i] != null ? bases[i] : m.color.getHex();
+          m.color.setHex(base);
+          m.color.lerp(new THREE.Color(tint), style === "hover" ? 0.35 : 0.55);
         }
-        m.emissive.setHex(colorHex);
-        m.emissiveIntensity = 0.65;
-      } else {
-        const base = mesh.userData.baseEmissive ?? 0x000000;
-        m.emissive.setHex(base);
-        m.emissiveIntensity = 0;
+      }
+      if ("emissive" in m) {
+        if (!m.emissive) m.emissive = new THREE.Color(0x000000);
+        m.emissive.setHex(tint);
+        m.emissiveIntensity = eIntensity;
       }
     }
+  }
+
+  _restyleMesh(mesh) {
+    if (!mesh) return;
+    if (mesh === this.activeMesh) this._applyMeshStyle(mesh, "active");
+    else if (this.selectedMeshes.has(mesh)) this._applyMeshStyle(mesh, "selected");
+    else this._applyMeshStyle(mesh, "idle");
   }
 
   _pointerMove(event) {
     const hit = this._hit(event);
     const mesh = hit?.object || null;
     if (mesh === this.hoverMesh) return;
-    if (this.hoverMesh && this.hoverMesh !== this.activeMesh) {
-      this._setMeshHighlight(this.hoverMesh, false);
-    }
+    if (this.hoverMesh) this._restyleMesh(this.hoverMesh);
     this.hoverMesh = mesh;
     if (mesh && mesh !== this.activeMesh) {
-      this._setMeshHighlight(mesh, true, COLOR_HOVER);
+      this._applyMeshStyle(mesh, "hover");
     }
     this.renderer.domElement.style.cursor = mesh ? "pointer" : "grab";
   }
@@ -451,21 +506,33 @@ export class Body3D {
   }
 
   setActive(regionId, mesh = null) {
-    if (this.activeMesh && this.activeMesh !== mesh) {
-      this._setMeshHighlight(this.activeMesh, false);
-    }
+    const prevActive = this.activeMesh;
     this.activeId = regionId || null;
-    this.activeMesh = mesh;
+
     if (mesh) {
-      this._setMeshHighlight(mesh, true, COLOR_ACTIVE);
+      this.selectedMeshes.add(mesh);
+      this.activeMesh = mesh;
+      if (prevActive && prevActive !== mesh) this._restyleMesh(prevActive);
+      this._applyMeshStyle(mesh, "active");
       return;
     }
-    // Highlight by region for box mode / external select
+
+    // External / 2D select: paint all meshes in region, keep prior selections
     const list = this.byRegion.get(regionId) || [];
-    for (const m of this.clickable) {
-      if (m.userData.regionId === regionId) this._setMeshHighlight(m, true, COLOR_ACTIVE);
-    }
-    if (list[0]) this.activeMesh = list[0];
+    const inRegion = this.clickable.filter((m) => m.userData.regionId === regionId);
+    const targets = list.length ? list : inRegion;
+    for (const m of targets) this.selectedMeshes.add(m);
+    this.activeMesh = targets[0] || null;
+    for (const m of this.selectedMeshes) this._restyleMesh(m);
+  }
+
+  /** Clear kept selection colors (e.g. when session is cleared). */
+  clearSelectionColors() {
+    for (const m of this.selectedMeshes) this._applyMeshStyle(m, "idle");
+    this.selectedMeshes.clear();
+    this.activeMesh = null;
+    this.activeId = null;
+    if (this.hoverMesh) this._applyMeshStyle(this.hoverMesh, "hover");
   }
 
   resize() {
@@ -496,6 +563,7 @@ export class Body3D {
     this.renderer.domElement.remove();
     this.clickable = [];
     this.byRegion.clear();
+    this.selectedMeshes.clear();
   }
 }
 

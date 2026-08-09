@@ -351,6 +351,7 @@ function bindSessionActions() {
   els.btnClear.addEventListener("click", () => {
     session.items = [];
     persistSession();
+    body3d?.clearSelectionColors?.();
   });
   els.btnExport.addEventListener("click", () => {
     const text = sessionToNote(session.items);
