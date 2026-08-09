@@ -1,7 +1,7 @@
 # Roadmap — Body Pain 3D
 
 อัปเดตล่าสุด: 2026-08-09  
-สถานะปัจจุบัน: **Phase 0 — Scaffold** ✅
+สถานะปัจจุบัน: **Phase 1 — Region Map** ✅ → ถัดไป Phase 2
 
 > เพื่อการศึกษาและการสื่อสารเท่านั้น — ไม่ใช่การวินิจฉัยทางการแพทย์
 
@@ -12,8 +12,8 @@
 | Phase | ชื่อ | เป้าหมาย | สถานะ |
 |-------|------|----------|--------|
 | 0 | Scaffold | repo + schema + สถาปัตยกรรม | ✅ เสร็จ |
-| 1 | Region Map | ~30 โซน + aliases ไทยครบ | 🔲 ถัดไป |
-| 2 | MVP 2D | คลิกหน้า/หลัง + แผงอธิบาย | 🔲 |
+| 1 | Region Map | ~30 โซน + aliases ไทยครบ | ✅ เสร็จ (37 โซน) |
+| 2 | MVP 2D | คลิกหน้า/หลัง + แผงอธิบาย | 🔲 ถัดไป |
 | 3 | Text input | พิมพ์อาการ → `region_id` | 🔲 |
 | 4 | Knowledge bridge | เชื่อมคลัง body-xambrain (local) | 🔲 |
 | 5 | 3D | โมเดล low-poly ใช้ id เดิม | 🔲 |
@@ -33,18 +33,19 @@
 
 ---
 
-## Phase 1 — Region Map (สัปดาห์ 1)
+## Phase 1 — Region Map ✅
 
-**ผลลัพธ์:** `data/body-pain-map.json` ใช้งานจริง (~25–40 โซน)
+**ผลลัพธ์:** `data/body-pain-map.json` — **37 โซน**
 
-- [ ] กำหนด taxonomy: ศีรษะ/คอ · ลำตัวหน้า · ลำตัวหลัง · แขน · ขา
-- [ ] ใส่ `side` + `surface` ให้ครบ
-- [ ] aliases ภาษาผู้ป่วย (บ่า, สะบัก, เอว, สะโพก, น่อง…)
-- [ ] ลิงก์ `wiki_refs` / `sen_refs` ไป concept ใน vault
-- [ ] `patient_blurb_th` สั้น ๆ ทุกโซน + disclaimer คงที่
-- [ ] สคริปต์ตรวจ: id ซ้ำ · alias ซ้ำ · schema validate
+- [x] กำหนด taxonomy: ศีรษะ/คอ · ลำตัวหน้า · ลำตัวหลัง · แขน · ขา
+- [x] ใส่ `side` + `surface` ให้ครบ
+- [x] aliases ภาษาผู้ป่วย (บ่า, สะบัก, เอว, สะโพก, น่อง…)
+- [x] ลิงก์ `wiki_refs` / `sen_refs` ไป concept ใน vault
+- [x] `patient_blurb_th` สั้น ๆ ทุกโซน + `disclaimer_th` คงที่
+- [x] สคริปต์ตรวจ: `python scripts/validate-map.py` (22/22 sample phrases)
 
-**เกณฑ์ผ่าน:** พิมพ์คำทั่วไปอย่างน้อย 20 คำ map ถูกโซนโดยไม่ต้องเดา
+**เกณฑ์ผ่าน:** พิมพ์คำทั่วไปอย่างน้อย 20 คำ map ถูกโซน — ✅  
+**Checkpoint:** 2026-08-09 — Phase 1 map + validator
 
 ---
 
@@ -138,6 +139,6 @@
 
 ## ลำดับงานถัดไปทันที
 
-1. ขยาย `body-pain-map.example.json` → `body-pain-map.json` (~30 โซน)
-2. วาง SVG/ภาพ 2D + hotspot ใน `web/`
-3. ต่อช่องพิมพ์ + resolver
+1. MVP UI 2D ใน `web/` — SVG หน้า/หลัง + hotspot ตาม `region_id`
+2. แผงอธิบายจาก `body-pain-map.json` + disclaimer
+3. ต่อช่องพิมพ์ (reuse logic จาก `scripts/validate-map.py`)

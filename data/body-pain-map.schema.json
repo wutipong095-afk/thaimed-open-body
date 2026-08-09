@@ -3,9 +3,13 @@
   "$id": "https://local.body-pain-3d/body-pain-map.schema.json",
   "title": "BodyPainMap",
   "type": "object",
-  "required": ["version", "regions"],
+  "required": ["version", "disclaimer_th", "regions"],
   "properties": {
     "version": { "type": "string" },
+    "disclaimer_th": {
+      "type": "string",
+      "description": "Constant non-diagnostic disclaimer shown in UI"
+    },
     "regions": {
       "type": "array",
       "items": {

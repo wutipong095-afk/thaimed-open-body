@@ -1,5 +1,7 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "disclaimer_th": "เพื่อการศึกษาและการสื่อสารตำแหน่งอาการเท่านั้น ไม่ใช่การวินิจฉัยหรือคำปรึกษาทางการแพทย์",
+  "_comment": "ตัวอย่างย่อ — ใช้ data/body-pain-map.json เป็นไฟล์หลัก",
   "regions": [
     {
       "id": "shoulder_right",
@@ -7,32 +9,10 @@
       "name_en": "Right shoulder",
       "side": "right",
       "surface": "any",
-      "aliases": ["ไหล่ขวา", "บ่าขวา", "สะบักขวา", "right shoulder"],
+      "aliases": ["ไหล่ขวา", "บ่าขวา", "right shoulder"],
       "wiki_refs": ["body-regions", "muscular-system", "sen-prathan-10"],
       "sen_refs": ["กาลทารี"],
-      "patient_blurb_th": "บริเวณนี้เกี่ยวข้องกับกล้ามเนื้อไหล่และคอ รวมถึงแนวเส้นที่ไปแขน ใช้สำหรับอธิบายตำแหน่งเท่านั้น ไม่ใช่การวินิจฉัย"
-    },
-    {
-      "id": "lumbar_left",
-      "name_th": "เอวด้านซ้าย",
-      "name_en": "Left lumbar",
-      "side": "left",
-      "surface": "posterior",
-      "aliases": ["เอวซ้าย", "หลังล่างซ้าย", "ปวดเอวซ้าย", "left lower back"],
-      "wiki_refs": ["body-regions", "muscular-system", "skeletal-system", "sen-prathan-10"],
-      "sen_refs": ["อิทา"],
-      "patient_blurb_th": "บริเวณเอวด้านซ้ายใกล้กระดูกสันหลังส่วนเอวและกล้ามเนื้อหลัง ใช้ชี้ตำแหน่งเพื่อสื่อสารกับผู้รักษา"
-    },
-    {
-      "id": "cervical_posterior",
-      "name_th": "ต้นคอ / คอด้านหลัง",
-      "name_en": "Posterior neck",
-      "side": "midline",
-      "surface": "posterior",
-      "aliases": ["ต้นคอ", "คอด้านหลัง", "คอเคล็ด", "ปวดคอ", "neck pain"],
-      "wiki_refs": ["body-regions", "muscular-system", "skeletal-system"],
-      "sen_refs": ["สุมนา"],
-      "patient_blurb_th": "บริเวณกระดูกคอและกล้ามเนื้อต้นคอ ช่วยบอกตำแหน่งอาการเมื่อยหรือเจ็บเมื่อขยับคอ"
+      "patient_blurb_th": "บริเวณไหล่และบ่าขวา — ดูรายการเต็มใน body-pain-map.json"
     }
   ]
 }

@@ -23,8 +23,8 @@ repo นี้เก็บเฉพาะแอป + schema แผนที่�
 | Phase | สรุป | สถานะ |
 |-------|------|--------|
 | 0 Scaffold | repo + schema | ✅ |
-| 1 Region Map | ~30 โซน + aliases | ถัดไป |
-| 2 MVP 2D | คลิกหน้า/หลัง | รอ |
+| 1 Region Map | 37 โซน + aliases | ✅ |
+| 2 MVP 2D | คลิกหน้า/หลัง | ถัดไป |
 | 3 Text | พิมพ์อาการ → region | รอ |
 | 4 Knowledge | เชื่อม vault / RAG | รอ |
 | 5 3D | Three.js + mesh ตาม id | รอ |
@@ -33,14 +33,22 @@ repo นี้เก็บเฉพาะแอป + schema แผนที่�
 ## โครงสร้าง
 
 ```
-data/body-pain-map.schema.json  — schema ของแผนที่โซน
-data/body-pain-map.example.json — ตัวอย่าง region + aliases
+data/body-pain-map.json         — แผนที่โซนหลัก (37 regions)
+data/body-pain-map.schema.json  — schema
+data/body-pain-map.example.json — ตัวอย่างย่อ
+scripts/validate-map.py         — ตรวจ id/alias + sample phrases
 docs/roadmap.md                 — โรดแมปเต็ม
 docs/hotcache.md                — สถานะ + checkpoint
 docs/architecture.md            — สถาปัตยกรรม
-web/                            — UI (จะเติมภายหลัง)
+web/                            — UI (Phase 2)
+```
+
+## ตรวจ map
+
+```powershell
+python scripts/validate-map.py
 ```
 
 ## สถานะ
 
-Phase 0 เสร็จ — ยังไม่มี UI / API รันได้ · งานถัดไป = ขยาย region map
+Phase 1 เสร็จ — งานถัดไป = MVP UI 2D ใน `web/`
