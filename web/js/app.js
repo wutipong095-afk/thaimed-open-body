@@ -267,6 +267,10 @@ function ensure3d() {
   try {
     body3d = new Body3D(els.figure3d, {
       onSelect: (regionId, meta = {}) => {
+        if (meta.deselected) {
+          handleDeselect3d(regionId, meta);
+          return;
+        }
         showRegion(regionId, {
           muscleName: meta.muscleName,
           side: meta.side,

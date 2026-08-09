@@ -500,6 +500,23 @@ export class Body3D {
     mesh.userData.side = side;
 
     const named = formatMuscleLabelThEn(rawName || muscleName, side);
+
+    // Click again on the same mesh → clear color at that spot
+    if (this.selectedMeshes.has(mesh)) {
+      this.deselectMesh(mesh);
+      this.onStatus(`ยกเลิก: ${named.lineTh}`);
+      this.onSelect(regionId, {
+        muscleName: rawName || muscleName,
+        muscleLabel: named,
+        side,
+        matchedBy,
+        mesh,
+        source: this.mode,
+        deselected: true,
+      });
+      return;
+    }
+
     this.setActive(regionId, mesh);
     this.onStatus(`เลือก: ${named.lineTh}`);
     this.onSelect(regionId, {
@@ -509,7 +526,22 @@ export class Body3D {
       matchedBy,
       mesh,
       source: this.mode,
+      deselected: false,
     });
+  }
+
+  /** Remove one mesh from selection and restore its material. */
+  deselectMesh(mesh) {
+    if (!mesh) return;
+    this.selectedMeshes.delete(mesh);
+    if (this.activeMesh === mesh) {
+      const rest = [...this.selectedMeshes];
+      this.activeMesh = rest.length ? rest[rest.length - 1] : null;
+      this.activeId = this.activeMesh?.userData?.regionId || null;
+    }
+    if (this.hoverMesh === mesh) this._applyMeshStyle(mesh, "hover");
+    else this._applyMeshStyle(mesh, "idle");
+    if (this.activeMesh) this._applyMeshStyle(this.activeMesh, "active");
   }
 
   setActive(regionId, mesh = null) {
