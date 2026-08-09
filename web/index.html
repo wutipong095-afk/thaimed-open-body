@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Body Pain Map — สื่อสารตำแหน่งอาการ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <div class="brand">
+        <p class="brand-mark">Body Pain Map</p>
+        <h1>ชี้ตำแหน่งที่เจ็บหรือเมื่อย</h1>
+        <p class="lede">คลิกบนร่างกาย หรือพิมพ์เป็นภาษาไทย — เพื่อสื่อสารกับผู้รักษา ไม่ใช่การวินิจฉัย</p>
+      </div>
+      <div class="view-toggle" role="group" aria-label="มุมมองร่างกาย">
+        <button type="button" class="view-btn is-active" data-view="anterior">ด้านหน้า</button>
+        <button type="button" class="view-btn" data-view="posterior">ด้านหลัง</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="stage" aria-label="แผนที่ร่างกาย">
+        <div class="figure-wrap">
+          <!-- Anterior -->
+          <svg id="view-anterior" class="body-svg is-visible" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหน้า">
+            <defs>
+              <linearGradient id="skinA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d8e4df"/>
+                <stop offset="100%" stop-color="#b7c9c2"/>
+              </linearGradient>
+            </defs>
+            <!-- silhouette hint -->
+            <ellipse cx="110" cy="38" rx="28" ry="32" fill="url(#skinA)" opacity="0.35"/>
+            <rect x="98" y="68" width="24" height="22" rx="8" fill="url(#skinA)" opacity="0.35"/>
+            <path d="M70 95 h80 l18 55 v70 H52 v-70 z" fill="url(#skinA)" opacity="0.3"/>
+            <path d="M52 218 h116 l10 90 H42 z" fill="url(#skinA)" opacity="0.28"/>
+            <rect x="58" y="308" width="40" height="110" rx="16" fill="url(#skinA)" opacity="0.28"/>
+            <rect x="122" y="308" width="40" height="110" rx="16" fill="url(#skinA)" opacity="0.28"/>
+
+            <!-- hotspots -->
+            <ellipse class="hotspot" data-region="head_cranial" cx="110" cy="28" rx="26" ry="18"/>
+            <ellipse class="hotspot" data-region="face" cx="110" cy="48" rx="22" ry="16"/>
+            <rect class="hotspot" data-region="cervical_anterior" x="98" y="66" width="24" height="20" rx="6"/>
+            <rect class="hotspot" data-region="shoulder_left" x="48" y="88" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="shoulder_right" x="144" y="88" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="chest_anterior" x="72" y="98" width="76" height="48" rx="10"/>
+            <rect class="hotspot" data-region="upper_arm_left" x="38" y="118" width="22" height="52" rx="8"/>
+            <rect class="hotspot" data-region="upper_arm_right" x="160" y="118" width="22" height="52" rx="8"/>
+            <rect class="hotspot" data-region="epigastric" x="78" y="148" width="64" height="28" rx="8"/>
+            <rect class="hotspot" data-region="elbow_forearm_left" x="30" y="172" width="24" height="55" rx="8"/>
+            <rect class="hotspot" data-region="elbow_forearm_right" x="166" y="172" width="24" height="55" rx="8"/>
+            <rect class="hotspot" data-region="flank_left" x="52" y="178" width="22" height="50" rx="7"/>
+            <rect class="hotspot" data-region="abdomen_umbilical" x="78" y="178" width="64" height="36" rx="8"/>
+            <rect class="hotspot" data-region="flank_right" x="146" y="178" width="22" height="50" rx="7"/>
+            <rect class="hotspot" data-region="wrist_hand_left" x="22" y="228" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="wrist_hand_right" x="170" y="228" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="abdomen_lower" x="78" y="216" width="64" height="32" rx="8"/>
+            <rect class="hotspot" data-region="hip_left" x="58" y="250" width="36" height="34" rx="10"/>
+            <rect class="hotspot" data-region="hip_right" x="126" y="250" width="36" height="34" rx="10"/>
+            <rect class="hotspot" data-region="thigh_left" x="60" y="286" width="36" height="70" rx="12"/>
+            <rect class="hotspot" data-region="thigh_right" x="124" y="286" width="36" height="70" rx="12"/>
+            <rect class="hotspot" data-region="knee_left" x="62" y="358" width="34" height="28" rx="8"/>
+            <rect class="hotspot" data-region="knee_right" x="124" y="358" width="34" height="28" rx="8"/>
+            <rect class="hotspot" data-region="calf_left" x="64" y="388" width="32" height="55" rx="10"/>
+            <rect class="hotspot" data-region="calf_right" x="124" y="388" width="32" height="55" rx="10"/>
+            <rect class="hotspot" data-region="ankle_foot_left" x="58" y="446" width="40" height="28" rx="8"/>
+            <rect class="hotspot" data-region="ankle_foot_right" x="122" y="446" width="40" height="28" rx="8"/>
+          </svg>
+
+          <!-- Posterior -->
+          <svg id="view-posterior" class="body-svg" viewBox="0 0 220 520" role="img" aria-label="ร่างกายด้านหลัง" hidden>
+            <defs>
+              <linearGradient id="skinB" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d8e4df"/>
+                <stop offset="100%" stop-color="#b7c9c2"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="110" cy="38" rx="28" ry="32" fill="url(#skinB)" opacity="0.35"/>
+            <rect x="98" y="68" width="24" height="22" rx="8" fill="url(#skinB)" opacity="0.35"/>
+            <path d="M70 95 h80 l18 55 v90 H52 v-90 z" fill="url(#skinB)" opacity="0.3"/>
+            <path d="M52 238 h116 l8 55 H44 z" fill="url(#skinB)" opacity="0.28"/>
+            <rect x="58" y="308" width="40" height="110" rx="16" fill="url(#skinB)" opacity="0.28"/>
+            <rect x="122" y="308" width="40" height="110" rx="16" fill="url(#skinB)" opacity="0.28"/>
+
+            <ellipse class="hotspot" data-region="head_cranial" cx="110" cy="30" rx="26" ry="20"/>
+            <rect class="hotspot" data-region="cervical_posterior" x="96" y="64" width="28" height="24" rx="7"/>
+            <rect class="hotspot" data-region="shoulder_left" x="48" y="88" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="shoulder_right" x="144" y="88" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="scapula_left" x="62" y="110" width="34" height="40" rx="8"/>
+            <rect class="hotspot" data-region="upper_back" x="96" y="108" width="28" height="55" rx="8"/>
+            <rect class="hotspot" data-region="scapula_right" x="124" y="110" width="34" height="40" rx="8"/>
+            <rect class="hotspot" data-region="upper_arm_left" x="38" y="118" width="22" height="52" rx="8"/>
+            <rect class="hotspot" data-region="upper_arm_right" x="160" y="118" width="22" height="52" rx="8"/>
+            <rect class="hotspot" data-region="elbow_forearm_left" x="30" y="172" width="24" height="55" rx="8"/>
+            <rect class="hotspot" data-region="elbow_forearm_right" x="166" y="172" width="24" height="55" rx="8"/>
+            <rect class="hotspot" data-region="lumbar_left" x="62" y="170" width="30" height="48" rx="8"/>
+            <rect class="hotspot" data-region="lumbar_mid" x="94" y="168" width="32" height="50" rx="8"/>
+            <rect class="hotspot" data-region="lumbar_right" x="128" y="170" width="30" height="48" rx="8"/>
+            <rect class="hotspot" data-region="wrist_hand_left" x="22" y="228" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="wrist_hand_right" x="170" y="228" width="28" height="28" rx="8"/>
+            <rect class="hotspot" data-region="sacrum_coccyx" x="92" y="220" width="36" height="30" rx="8"/>
+            <rect class="hotspot" data-region="buttock_left" x="58" y="248" width="40" height="42" rx="12"/>
+            <rect class="hotspot" data-region="buttock_right" x="122" y="248" width="40" height="42" rx="12"/>
+            <rect class="hotspot" data-region="thigh_left" x="60" y="292" width="36" height="66" rx="12"/>
+            <rect class="hotspot" data-region="thigh_right" x="124" y="292" width="36" height="66" rx="12"/>
+            <rect class="hotspot" data-region="knee_left" x="62" y="360" width="34" height="26" rx="8"/>
+            <rect class="hotspot" data-region="knee_right" x="124" y="360" width="34" height="26" rx="8"/>
+            <rect class="hotspot" data-region="calf_left" x="64" y="388" width="32" height="55" rx="10"/>
+            <rect class="hotspot" data-region="calf_right" x="124" y="388" width="32" height="55" rx="10"/>
+            <rect class="hotspot" data-region="ankle_foot_left" x="58" y="446" width="40" height="28" rx="8"/>
+            <rect class="hotspot" data-region="ankle_foot_right" x="122" y="446" width="40" height="28" rx="8"/>
+          </svg>
+        </div>
+        <p class="hint">แตะหรือคลิกบริเวณที่เจ็บ · สลับด้านหน้า/ด้านหลังด้านบน</p>
+      </section>
+
+      <aside class="panel">
+        <form id="search-form" class="search">
+          <label for="pain-input">หรือพิมพ์ตำแหน่งอาการ</label>
+          <div class="search-row">
+            <input id="pain-input" type="search" placeholder="เช่น ปวดบ่าขวาเมื่อย, เอวซ้าย" autocomplete="off" />
+            <button type="submit">หา</button>
+          </div>
+          <p id="search-feedback" class="feedback" hidden></p>
+        </form>
+
+        <article id="detail" class="detail is-empty">
+          <p class="detail-placeholder">เลือกบริเวณบนร่างกาย เพื่อดูคำอธิบายสั้น ๆ</p>
+          <div class="detail-body" hidden>
+            <p class="detail-kicker" id="detail-en"></p>
+            <h2 id="detail-title"></h2>
+            <p id="detail-blurb" class="blurb"></p>
+            <div class="meta">
+              <div>
+                <h3>Layer S</h3>
+                <ul id="detail-wiki"></ul>
+              </div>
+              <div>
+                <h3>Layer T · เส้น</h3>
+                <ul id="detail-sen"></ul>
+              </div>
+            </div>
+            <p class="meta-line"><span>รหัสโซน</span> <code id="detail-id"></code></p>
+          </div>
+        </article>
+
+        <p id="disclaimer" class="disclaimer"></p>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

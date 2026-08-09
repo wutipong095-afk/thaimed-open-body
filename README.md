@@ -5,42 +5,48 @@
 
 > **เพื่อการศึกษาและการสื่อสารเท่านั้น — ไม่ใช่การวินิจฉัยหรือคำปรึกษาทางการแพทย์**
 
+## เปิดใช้ (MVP 2D)
+
+```powershell
+cd D:\obsidian\body-pain-3d
+python scripts/serve-web.py
+```
+
+เปิดเบราว์เซอร์ที่ http://127.0.0.1:8787/web/  
+(ต้องเสิร์ฟผ่าน HTTP — เปิดไฟล์ตรง ๆ จะโหลด `body-pain-map.json` ไม่ได้)
+
 ## ความสัมพันธ์กับคลังความรู้
 
-ความรู้ anatomy / TTM อยู่ใน vault ท้องถิ่น **body-xambrain** (ไม่ push ขึ้น GitHub — ขนาดใหญ่ ~PDF/รูปหลาย GB)  
-repo นี้เก็บเฉพาะแอป + schema แผนที่บริเวณเจ็บ
+ความรู้ anatomy / TTM อยู่ใน vault ท้องถิ่น **body-xambrain** (ไม่ push ขึ้น GitHub)  
+repo นี้เก็บแอป + schema แผนที่บริเวณเจ็บ
 
 | แหล่ง | บทบาท |
 |--------|--------|
 | `body-xambrain` (local) | concept nodes, RAG embeddings, ข้อสอบ |
-| `body-pain-3d` (repo นี้) | UI คลิก/พิมพ์ · region map · API ชั้นสื่อสาร |
+| `body-pain-3d` (repo นี้) | UI คลิก/พิมพ์ · region map |
 
 ## แผนพัฒนา
 
-ดูรายละเอียดและเกณฑ์ผ่านใน [docs/roadmap.md](docs/roadmap.md)  
-สถานะ session ล่าสุด: [docs/hotcache.md](docs/hotcache.md)
+ดู [docs/roadmap.md](docs/roadmap.md) · สถานะ [docs/hotcache.md](docs/hotcache.md)
 
 | Phase | สรุป | สถานะ |
 |-------|------|--------|
 | 0 Scaffold | repo + schema | ✅ |
 | 1 Region Map | 37 โซน + aliases | ✅ |
-| 2 MVP 2D | คลิกหน้า/หลัง | ถัดไป |
-| 3 Text | พิมพ์อาการ → region | รอ |
-| 4 Knowledge | เชื่อม vault / RAG | รอ |
+| 2 MVP 2D | คลิกหน้า/หลัง | ✅ |
+| 3 Text | พิมพ์อาการ → region | ✅ พื้นฐาน |
+| 4 Knowledge | เชื่อม vault / RAG | ถัดไป |
 | 5 3D | Three.js + mesh ตาม id | รอ |
 | 6 Polish | mobile / UX | รอ |
 
 ## โครงสร้าง
 
 ```
-data/body-pain-map.json         — แผนที่โซนหลัก (37 regions)
-data/body-pain-map.schema.json  — schema
-data/body-pain-map.example.json — ตัวอย่างย่อ
-scripts/validate-map.py         — ตรวจ id/alias + sample phrases
-docs/roadmap.md                 — โรดแมปเต็ม
-docs/hotcache.md                — สถานะ + checkpoint
-docs/architecture.md            — สถาปัตยกรรม
-web/                            — UI (Phase 2)
+data/body-pain-map.json   — แผนที่โซนหลัก
+web/                      — UI 2D (HTML/CSS/JS + SVG)
+scripts/serve-web.py      — เปิดเซิร์ฟเวอร์ท้องถิ่น :8787
+scripts/validate-map.py   — ตรวจ map
+docs/                     — roadmap · hotcache · architecture
 ```
 
 ## ตรวจ map
@@ -48,7 +54,3 @@ web/                            — UI (Phase 2)
 ```powershell
 python scripts/validate-map.py
 ```
-
-## สถานะ
-
-Phase 1 เสร็จ — งานถัดไป = MVP UI 2D ใน `web/`
