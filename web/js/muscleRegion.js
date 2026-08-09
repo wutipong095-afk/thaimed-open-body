@@ -46,7 +46,22 @@ const NAME_RULES = [
     region: (s) => sided(s, "lumbar_left", "lumbar_right", "lumbar_mid"),
   },
 
-  // —— Lower limb first (before arm flexor/extensor) ——
+  // —— Hand / wrist BEFORE lower limb ——
+  // Anatomical position: hands hang beside thighs, so pure XYZ looks like "calf/thigh".
+  {
+    re: /common flexor tendon sheath|synovial sheaths? of digits of hand|tendon sheath - abd\.? pollicis|tendon sheath of extensor digitorum and extensor indicis|tendon sheath of extensors carpi|tendon sheath of flexor digitorum(?!\s+longus)|of hand|pollicis|thenar|hypothenar|palmar interosse|palmaris brevis|lumbrical muscles of hand|interossei muscles of hand|dorsal interossei muscles of hand|flexor digiti minimi of hand|opponens digiti minimi|abductor digiti minimi of hand|cruciform part of fibrous sheath of digit of hand/i,
+    region: (s) => sided(s, "wrist_hand_left", "wrist_hand_right"),
+  },
+  {
+    re: /brachioradialis|pronator|supinator|palmaris longus|flexor carpi|extensor carpi|flexor digitorum superficialis|flexor digitorum profundus|flexor pollicis longus|extensor digitorum(?!\s+longus|\s+brevis)|extensor pollicis|extensor indicis|abductor pollicis longus/i,
+    region: (s) => sided(s, "elbow_forearm_left", "elbow_forearm_right"),
+  },
+  {
+    re: /biceps brachii|brachialis|coracobrachialis|triceps brachii|triceps(?!\s*surae)|anconeus/i,
+    region: (s) => sided(s, "upper_arm_left", "upper_arm_right"),
+  },
+
+  // —— Lower limb (after hand — avoid palm → น่อง) ——
   {
     re: /gluteus|tensor fascia|piriformis|obturator|gemellus|quadratus femoris/i,
     region: (s) => sided(s, "buttock_left", "buttock_right"),
@@ -68,23 +83,8 @@ const NAME_RULES = [
     region: (s) => sided(s, "calf_left", "calf_right"),
   },
   {
-    re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi|plantar|dorsal interosseous.*foot|foot/i,
+    re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi of foot|plantar interosse|plantar tendon|of foot|\bfoot\b/i,
     region: (s) => sided(s, "ankle_foot_left", "ankle_foot_right"),
-  },
-
-  // —— Upper limb ——
-  {
-    re: /biceps brachii|brachialis|coracobrachialis|triceps brachii|triceps(?!\s*surae)|anconeus/i,
-    region: (s) => sided(s, "upper_arm_left", "upper_arm_right"),
-  },
-  {
-    // Avoid bare flexor|extensor — those match leg muscles too
-    re: /brachioradialis|pronator|supinator|palmaris|flexor carpi|extensor carpi|flexor digitorum superficialis|flexor digitorum profundus|flexor pollicis longus|extensor digitorum(?!\s+longus|\s+brevis)|extensor pollicis|extensor indicis|abductor pollicis longus|flexor digiti minimi brevis of hand/i,
-    region: (s) => sided(s, "elbow_forearm_left", "elbow_forearm_right"),
-  },
-  {
-    re: /thenar|hypothenar|opponens|abductor pollicis(?!\s*longus)|adductor pollicis|palmaris brevis|lumbrical(?!.*foot)|palmar interosse|dorsal interosseous.*hand|interosseous.*hand/i,
-    region: (s) => sided(s, "wrist_hand_left", "wrist_hand_right"),
   },
 ];
 
@@ -234,7 +234,13 @@ export function regionFromPosition(p) {
     return left ? "hip_left" : right ? "hip_right" : "sacrum_coccyx";
   }
 
-  // Lower limb (before arms): feet → calf → knee → thigh
+  // Hands hang beside thighs in anatomical pose — very lateral ⇒ hand, not leg
+  if (y <= 0.38 && Math.abs(x) > 0.34) {
+    if (y > 0.22) return left ? "elbow_forearm_left" : "elbow_forearm_right";
+    return left ? "wrist_hand_left" : "wrist_hand_right";
+  }
+
+  // Lower limb: feet → calf → knee → thigh
   if (y <= 0.28) {
     if (y > 0.12) return left ? "thigh_left" : right ? "thigh_right" : "thigh_left";
     if (y > 0.05) return left ? "knee_left" : right ? "knee_right" : "knee_left";
@@ -242,7 +248,7 @@ export function regionFromPosition(p) {
     return left ? "ankle_foot_left" : right ? "ankle_foot_right" : "ankle_foot_left";
   }
 
-  // Arms: high and lateral only
+  // Arms: higher and lateral
   if (Math.abs(x) > 0.28 && y > 0.38) {
     if (y > 0.55) return left ? "upper_arm_left" : "upper_arm_right";
     if (y > 0.42) return left ? "elbow_forearm_left" : "elbow_forearm_right";

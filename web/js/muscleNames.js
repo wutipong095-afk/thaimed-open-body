@@ -131,6 +131,21 @@ const MUSCLE_DICT = {
   "palmar interossei": { en: "Palmar interossei", la: "Mm. interossei palmares", th: "กล้ามเนื้ออินเทอร์ออสเซียสฝ่ามือ" },
   "dorsal interossei muscles of hand": { en: "Dorsal interossei (hand)", la: "Mm. interossei dorsales manus", th: "กล้ามเนื้ออินเทอร์ออสเซียสหลังมือ" },
   "lumbrical muscles of hand": { en: "Lumbricals (hand)", la: "Mm. lumbricales manus", th: "กล้ามเนื้อลัมบริคอลของมือ" },
+  "common flexor tendon sheath": {
+    en: "Common flexor tendon sheath",
+    la: "Vagina communis tendinum musculorum flexorum",
+    th: "ปลอกเอ็นเฟลกเซอร์ร่วม",
+    th_alt: "ปลอกเอ็นงอนิ้วร่วม (ฝ่ามือ/ข้อมือ)",
+  },
+  "synovial sheaths of digits of hand": {
+    en: "Synovial sheaths of digits of hand",
+    la: "Vaginae synoviales digitorum manus",
+    th: "ปลอกไขข้อนิ้วมือ",
+  },
+  "cruciform part of fibrous sheath of digit of hand": {
+    en: "Cruciform part of fibrous sheath of digit (hand)",
+    th: "ปลอกเส้นใยนิ้วมือส่วนไขว้",
+  },
 
   // —— Hip / thigh ——
   "gluteus maximus": { en: "Gluteus maximus", la: "M. gluteus maximus", th: "กล้ามเนื้อกลูเทียส แมกซิมัส", th_alt: "กล้ามเนื้อก้นใหญ่" },
