@@ -258,6 +258,55 @@ function currentView() {
   return els.viewPosterior.classList.contains("is-visible") ? "posterior" : "anterior";
 }
 
+function clearDetailPanel() {
+  activeId = null;
+  els.detail.classList.add("is-empty");
+  els.placeholder.hidden = false;
+  els.detailBody.hidden = true;
+  if (els.muscle) {
+    els.muscle.hidden = true;
+    els.muscle.textContent = "";
+  }
+  if (els.muscleEn) {
+    els.muscleEn.hidden = true;
+    els.muscleEn.textContent = "";
+  }
+  setActiveHotspots("");
+}
+
+function handleDeselect3d(regionId, meta = {}) {
+  const lineTh = meta.muscleLabel?.lineTh || meta.muscleName || "";
+  for (let i = session.items.length - 1; i >= 0; i--) {
+    const item = session.items[i];
+    if (item.id !== regionId) continue;
+    if (lineTh && item.name_th && !String(item.name_th).includes(lineTh.split(" (")[0])) {
+      continue;
+    }
+    session.items.splice(i, 1);
+    break;
+  }
+  persistSession();
+
+  const still = body3d?.selectedMeshes?.size || 0;
+  if (!still) {
+    clearDetailPanel();
+    showFeedback("ยกเลิกจุดที่เลือกแล้ว");
+    return;
+  }
+  const next = body3d.activeMesh;
+  const nextId = body3d.activeId || regionId;
+  if (next) {
+    showRegion(nextId, {
+      muscleName: next.userData.rawName || next.userData.muscleName,
+      side: next.userData.side,
+      mesh: next,
+      from3d: true,
+      skipSession: true,
+    });
+  }
+  showFeedback(lineTh ? `ยกเลิก: ${lineTh}` : "ยกเลิกจุดที่เลือก");
+}
+
 function ensure3d() {
   if (body3d) return true;
   if (!canUseWebGL()) {
