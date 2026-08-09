@@ -49,7 +49,7 @@ const NAME_RULES = [
   // —— Hand / wrist BEFORE lower limb ——
   // Anatomical position: hands hang beside thighs, so pure XYZ looks like "calf/thigh".
   {
-    re: /common flexor tendon sheath|synovial sheaths? of digits of hand|tendon sheath - abd\.? pollicis|tendon sheath of extensor digitorum and extensor indicis|tendon sheath of extensors carpi|tendon sheath of flexor digitorum(?!\s+longus)|of hand|pollicis|thenar|hypothenar|palmar interosse|palmaris brevis|lumbrical muscles of hand|interossei muscles of hand|dorsal interossei muscles of hand|flexor digiti minimi of hand|opponens digiti minimi|abductor digiti minimi of hand|cruciform part of fibrous sheath of digit of hand/i,
+    re: /common flexor tendon sheath|synovial sheaths? of digits of hand|tendon sheath - abd\.? pollicis|tendon sheath of extensor digitorum and extensor indicis|tendon sheath of extensors carpi|tendon sheath of flexor digitorum(?!\s+longus)|of hand|pollicis|thenar|hypothenar|palmar interosse|palmaris brevis|lumbrical muscles of hand|interossei muscles of hand|dorsal interossei muscles of hand|flexor digiti minimi of hand|opponens digiti minimi(?!.*foot)|abductor digiti minimi of hand|cruciform part of fibrous sheath of digit of hand/i,
     region: (s) => sided(s, "wrist_hand_left", "wrist_hand_right"),
   },
   {
@@ -83,7 +83,7 @@ const NAME_RULES = [
     region: (s) => sided(s, "calf_left", "calf_right"),
   },
   {
-    re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi of foot|plantar interosse|plantar tendon|of foot|\bfoot\b/i,
+    re: /abductor hallucis|flexor digitorum brevis|quadratus plantae|interosseous pedis|extensor digitorum brevis|abductor digiti minimi of foot|opponens digiti minimi.*foot|plantar interosse|plantar tendon|calcaneal|of foot|\bfoot\b/i,
     region: (s) => sided(s, "ankle_foot_left", "ankle_foot_right"),
   },
 ];
