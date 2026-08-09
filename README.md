@@ -57,6 +57,10 @@ $env:BODY_XAMBRAIN_VAULT = "D:\obsidian\body-xambrain"
 python scripts/serve-web.py
 ```
 
+## คู่มือผู้ใช้
+
+ดู [docs/user-guide.md](docs/user-guide.md)
+
 ## ตรวจ map
 
 ```powershell
