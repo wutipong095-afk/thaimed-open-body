@@ -25,7 +25,7 @@ memory ของ Claude บนเครื่อง local ไม่ตามไ�
 python scripts/serve-web.py          # http://127.0.0.1:8787/web/  (ต้องเสิร์ฟผ่าน HTTP)
 python scripts/validate-map.py       # ตรวจ data/body-pain-map.json
 python scripts/check-hotspots.py     # ตรวจจุดคลิก 2D ใน web/index.html
-python scripts/check-offline.py      # ไม่มี CDN · sw.js cache ครบ · CSP hash ตรง importmap
+python scripts/check-offline.py      # ไม่มี CDN · sw.js cache ครบ · CSP hash ตรง importmap · MODEL_CACHE ตรงกัน
 for f in web/js/*.js web/sw.js; do node --check "$f"; done
 ```
 

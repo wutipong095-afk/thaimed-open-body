@@ -5,7 +5,7 @@
 
 import { MODEL_URL } from "./body3d.js";
 
-/** Must match MODEL_CACHE in sw.js */
+/** Must match MODEL_CACHE in sw.js (checked by scripts/check-offline.py) */
 const MODEL_CACHE = "body-pain-model-v1";
 
 /**

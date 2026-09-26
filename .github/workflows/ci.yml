@@ -28,7 +28,7 @@ jobs:
       - name: Check 2D hotspots (ids + left/right sides)
         run: python scripts/check-hotspots.py
 
-      - name: Check offline build (no CDN, sw.js cache list, CSP hash)
+      - name: Check offline build (no CDN, sw.js cache list, CSP hash, MODEL_CACHE)
         run: python scripts/check-offline.py
 
       - name: Validate web manifest JSON
