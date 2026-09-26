@@ -70,3 +70,13 @@ python scripts/check-hotspots.py
 ```
 
 GitHub Actions (`.github/workflows/ci.yml`) รันการตรวจเหล่านี้ + JS syntax check ทุก push เข้า `main` และทุก PR
+
+## License
+
+| ส่วน | License |
+|---|---|
+| โค้ด (`web/`, `scripts/`, workflow) | [MIT](LICENSE) |
+| เนื้อหา: แผนที่บริเวณและข้อความใน `data/`, เอกสารใน `docs/` | [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt) |
+| ไลบรารี ฟอนต์ และโมเดล 3D จากภายนอก | ตาม license ของเจ้าของ — ดู [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) |
+
+นำไปใช้และต่อยอดได้ฟรี: โค้ดต้องคงข้อความ copyright ไว้ · เนื้อหาต้องให้เครดิต และถ้าดัดแปลงต้องเผยแพร่ด้วย CC BY-SA 4.0 เช่นกัน

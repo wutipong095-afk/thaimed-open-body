@@ -23,7 +23,7 @@
 
 ## Phase 0 — Scaffold ✅
 
-- [x] สร้าง GitHub repo (private): `body-pain-3d`
+- [x] สร้าง GitHub repo: `body-pain-3d` (private, ต้นทาง) → เผยแพร่เป็น `thaimed-open-body` (public)
 - [x] แยกจาก vault `body-xambrain` (ไม่ push PDF/รูป)
 - [x] schema + ตัวอย่าง `body-pain-map`
 - [x] `docs/architecture.md`

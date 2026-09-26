@@ -7,7 +7,7 @@
 |---|---|---|---|
 | `three/build/` | npm `three` (`build/three.module.js`, `three.core.js`) | 0.172.0 | MIT (`three/LICENSE`) |
 | `three/addons/` | npm `three` `examples/jsm/` — เฉพาะ GLTFLoader, DRACOLoader, OrbitControls, BufferGeometryUtils | 0.172.0 | MIT |
-| `draco/` | npm `three` `examples/jsm/libs/draco/gltf/` (Google Draco decoder) | มากับ three 0.172.0 | Apache-2.0 |
+| `draco/` | npm `three` `examples/jsm/libs/draco/gltf/` (Google Draco decoder) | มากับ three 0.172.0 | Apache-2.0 (`draco/LICENSE`) |
 | `fonts/` | npm `@fontsource/sarabun`, `@fontsource/manrope` — เฉพาะ subset thai/latin และน้ำหนักที่ใช้ | 5.3.0 | SIL OFL 1.1 (`fonts/LICENSE-*.txt`) |
 
 ## อัปเดต three.js
