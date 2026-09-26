@@ -24,6 +24,8 @@ env:
 
 jobs:
   build:
+    # Pages is only published from the public repo; skip in private mirrors.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
