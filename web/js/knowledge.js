@@ -13,6 +13,9 @@ const RED_FLAGS = [
   "แน่นหน้าอก", "เจ็บหน้าอก", "หายใจลำบาก", "หายใจไม่ออก", "หน้ามืด", "หมดสติ",
   "อ่อนแรงครึ่งซีก", "แขนขาอ่อนแรง", "ปากเบี้ยว", "พูดไม่ชัด", "ชาครึ่งซีก",
   "ไข้สูง", "คอแข็ง", "อุบัติเหตุ", "ถูกกระแทก", "กลั้นปัสสาวะไม่ได้",
+  // Neck/shoulder/head red flags from knowledge/neck-shoulder-contraindications.md
+  "ชาลงแขน", "ร้าวลงแขน", "ชาร้าว", "เห็นภาพซ้อน", "ตามัวลง", "เดินเซ", "อาเจียนพุ่ง",
+  "ปวดหัวรุนแรง", "ปวดศีรษะรุนแรง", "ไหล่ผิดรูป", "ข้อผิดรูป", "ไหล่หลุด",
 ];
 
 /** Thai function words that carry no meaning for search */
@@ -22,6 +25,9 @@ const STOPWORDS = new Set([
   "อยู่", "ด้วย", "โดย", "แต่", "ยัง", "อะไร", "ไหม", "มั้ย", "บ้าง", "ครับ", "ค่ะ", "คะ", "นะ",
   "ทำ", "ทำไม", "อย่างไร", "ยังไง", "เวลา", "ๆ",
 ]);
+
+/** Symptom words that add to the score but cannot make a match on their own */
+const GENERIC = new Set(["ปวด", "เจ็บ", "เมื่อย", "อาการ", "นวด", "ตึง"]);
 
 const segmenter =
   typeof Intl !== "undefined" && "Segmenter" in Intl
@@ -85,11 +91,14 @@ export class KnowledgeIndex {
     const results = [];
     this.docs.forEach((d, i) => {
       let score = 0;
+      let specific = false;
       for (const tok of terms) {
         const f = d.tf.get(tok);
         if (!f) continue;
+        if (!GENERIC.has(tok)) specific = true;
         score += (this.idf(tok) * f * (K1 + 1)) / (f + K1 * (1 - B + (B * d.len) / this.avgLen));
       }
+      if (!specific) score = 0;
       if (score > 0 && regionId && this.chunks[i].regions.includes(regionId)) score += REGION_BOOST;
       if (score > 0) results.push({ chunk: this.chunks[i], score });
     });
