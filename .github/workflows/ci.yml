@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate region map
+        run: python scripts/validate-map.py
+
+      - name: Check 2D hotspots (ids + left/right sides)
+        run: python scripts/check-hotspots.py
+
+      - name: Validate web manifest JSON
+        run: python -m json.tool web/manifest.webmanifest > /dev/null
+
+      - name: JS syntax check
+        run: for f in web/js/*.js web/sw.js; do node --check "$f"; done
+
+      # audit-region-map.mjs needs the GLB model, which is not committed (see .gitignore),
+      # so it is run locally only.
