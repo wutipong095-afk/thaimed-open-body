@@ -47,6 +47,7 @@ data/region-followups.json   — คำถามซักต่อตามโ�
 web/                         — UI 2D (HTML/CSS/JS + SVG)
 scripts/serve-web.py         — UI + /api/knowledge (:8787)
 scripts/validate-map.py      — ตรวจ map
+scripts/check-hotspots.py    — ตรวจจุดคลิก 2D (โซน + ซ้าย/ขวา)
 docs/                        — roadmap · hotcache · architecture
 ```
 
@@ -65,4 +66,7 @@ python scripts/serve-web.py
 
 ```powershell
 python scripts/validate-map.py
+python scripts/check-hotspots.py
 ```
+
+GitHub Actions (`.github/workflows/ci.yml`) รันการตรวจเหล่านี้ + JS syntax check ทุก push เข้า `main` และทุก PR
