@@ -71,6 +71,16 @@ python scripts/check-hotspots.py
 
 GitHub Actions (`.github/workflows/ci.yml`) รันการตรวจเหล่านี้ + JS syntax check ทุก push เข้า `main` และทุก PR
 
+## แผนภาพและภาพหน้าจอ
+
+| | |
+|---|---|
+| แผนภาพระบบ (Data Flow · Architecture · AI Pipeline) | [`docs/diagrams/`](docs/diagrams) — ต้นฉบับ SVG + PNG |
+| ภาพหน้าจอจากเว็บจริง | [`docs/screenshots/`](docs/screenshots) |
+| สร้างใหม่ | [`scripts/docs-media/`](scripts/docs-media) |
+
+![Data Flow](docs/diagrams/01-data-flow.png)
+
 ## License
 
 | ส่วน | License |

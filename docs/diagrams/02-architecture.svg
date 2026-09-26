@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960" width="1400" height="960" font-family="Sarabun, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" role="img" aria-label="System Architecture — Local-first">
+<defs><marker id="ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#50635c"/></marker><marker id="ah-plan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a9a94"/></marker><marker id="ah-net" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3b6fb6"/></marker><marker id="ah-priv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7a5bb5"/></marker></defs>
+<rect width="1400" height="960" fill="#ffffff"/>
+<text x="40" y="44" font-size="26" font-weight="700" fill="#16302a">System Architecture — Local-first</text>
+<rect x="30" y="70" width="880" height="610" rx="18" fill="#eef8f5" fill-opacity="0.45" stroke="#1f9e86" stroke-width="2"/><text x="48" y="100" font-size="17" font-weight="700" fill="#12463c">เครื่องผู้ใช้ (มือถือ / แท็บเล็ต / คอมพิวเตอร์) — เบราว์เซอร์</text>
+<rect x="60" y="120" width="260" height="95" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="76" y="150" font-size="17" font-weight="700" fill="#12463c">หน้าจอ 2D</text>
+<text x="76" y="174" font-size="14" fill="#5b6f68">SVG · ด้านหน้า/ด้านหลัง</text>
+<rect x="340" y="120" width="260" height="95" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="356" y="150" font-size="17" font-weight="700" fill="#12463c">โมเดล 3D</text>
+<text x="356" y="174" font-size="14" fill="#5b6f68">Three.js + Draco (self-host)</text>
+<rect x="620" y="120" width="260" height="95" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="636" y="150" font-size="17" font-weight="700" fill="#12463c">ช่องพิมพ์ภาษาไทย</text>
+<text x="636" y="174" font-size="14" fill="#5b6f68">หาบริเวณ / ถามคลังความรู้</text>
+<rect x="60" y="255" width="540" height="95" rx="12" fill="#fff4dc" stroke="#d6921f" stroke-width="2"/>
+<text x="76" y="285" font-size="17" font-weight="700" fill="#6b4506">แปลงเป็น region_id</text>
+<text x="76" y="309" font-size="14" fill="#5b6f68">resolve.js · muscleRegion.js (กฎที่อธิบายได้ ตรวจด้วย CI)</text>
+<path d="M190,215 L190,253" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<path d="M470,215 L470,253" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<path d="M750,215 L750,235 L560,235 L560,253" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="620" y="255" width="260" height="95" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="636" y="285" font-size="17" font-weight="700" fill="#12463c">แผงผลลัพธ์</text>
+<text x="636" y="309" font-size="14" fill="#5b6f68">คำอธิบาย · คำถามซักอาการ</text>
+<text x="636" y="330" font-size="14" fill="#5b6f68">เส้นประธาน · คำเตือน</text>
+<path d="M600,302 L618,302" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="60" y="390" width="400" height="95" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="76" y="420" font-size="17" font-weight="700" fill="#12463c">ค้นคลังความรู้ในเครื่อง</text>
+<text x="76" y="444" font-size="14" fill="#5b6f68">ตัดคำไทย (Intl.Segmenter) + BM25</text>
+<text x="76" y="465" font-size="14" fill="#5b6f68">กรองตามบริเวณ · แสดงแหล่งอ้างอิง</text>
+<rect x="362.2" y="378" width="87.8" height="24" rx="12" fill="#1f9e86"/><text x="406.1" y="395" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ทำงานแล้ว</text>
+<rect x="480" y="390" width="400" height="95" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="496" y="420" font-size="17" font-weight="700" fill="#12463c">บันทึกในเครื่อง</text>
+<text x="496" y="444" font-size="14" fill="#5b6f68">localStorage → ส่งออกไฟล์ .md</text>
+<text x="496" y="465" font-size="14" fill="#5b6f68">ไม่มีบัญชี ไม่ส่งข้อมูลออก</text>
+<path d="M750,350 L750,388" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="60" y="525" width="820" height="125" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="76" y="555" font-size="17" font-weight="700" fill="#12463c">Service Worker (ออฟไลน์)</text>
+<text x="76" y="579" font-size="14" fill="#5b6f68">cache แอป: 33 ไฟล์ + ข้อมูล JSON (บังคับด้วย CSP: โหลดจากโดเมนตัวเองเท่านั้น)</text>
+<text x="76" y="600" font-size="14" fill="#5b6f68">cache โมเดล 3D: 23 MB — เก็บเมื่อผู้ใช้กด “ดาวน์โหลดโมเดล 3D”</text>
+<text x="76" y="621" font-size="14" fill="#5b6f68">ตรวจความครบถ้วนด้วย scripts/check-offline.py ทุก PR</text>
+<rect x="950" y="70" width="420" height="610" rx="18" fill="#eef3fb" fill-opacity="0.45" stroke="#3b6fb6" stroke-width="2"/><text x="968" y="100" font-size="17" font-weight="700" fill="#1d3a66">อินเทอร์เน็ต (สาธารณะ)</text>
+<rect x="975" y="125" width="370" height="110" rx="12" fill="#eef3fb" stroke="#3b6fb6" stroke-width="2"/>
+<text x="991" y="155" font-size="17" font-weight="700" fill="#1d3a66">GitHub Pages</text>
+<text x="991" y="179" font-size="14" fill="#5b6f68">ไฟล์แอป + ข้อมูล JSON</text>
+<text x="991" y="200" font-size="14" fill="#5b6f68">HTTPS · ไม่มีเซิร์ฟเวอร์ประมวลผล</text>
+<rect x="975" y="290" width="370" height="110" rx="12" fill="#eef3fb" stroke="#3b6fb6" stroke-width="2"/>
+<text x="991" y="320" font-size="17" font-weight="700" fill="#1d3a66">GitHub Release</text>
+<text x="991" y="344" font-size="14" fill="#5b6f68">ไฟล์โมเดล 3D (CC BY-SA 4.0)</text>
+<text x="991" y="365" font-size="14" fill="#5b6f68">ตรวจ SHA-256 ก่อน deploy</text>
+<path d="M1160,290 L1160,237" fill="none" stroke="#3b6fb6" stroke-width="2.2" marker-end="url(#ah-net)"/>
+<text x="1205" y="268" font-size="13" fill="#3b6fb6" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="5">deploy</text>
+<rect x="975" y="470" width="370" height="150" rx="12" fill="#f6f7f6" stroke="#8a9a94" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="991" y="500" font-size="17" font-weight="700" fill="#4a5a54">AI Proxy + LLM</text>
+<text x="991" y="524" font-size="14" fill="#5b6f68">API key อยู่ฝั่งเซิร์ฟเวอร์เท่านั้น</text>
+<text x="991" y="545" font-size="14" fill="#5b6f68">rate limit + เพดานค่าใช้จ่าย</text>
+<text x="991" y="566" font-size="14" fill="#5b6f68">รับเฉพาะคำถาม + ข้อความที่ค้นได้</text>
+<text x="991" y="587" font-size="14" fill="#5b6f68">(ไม่มีข้อมูลส่วนตัว)</text>
+<rect x="1247.2" y="458" width="87.8" height="24" rx="12" fill="#8a9a94"/><text x="1291.1" y="475" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Hackathon</text>
+<path d="M975,180 L930,180 L930,587 L882,587" fill="none" stroke="#3b6fb6" stroke-width="2.2" marker-end="url(#ah-net)"/>
+<text x="925" y="390" font-size="13" fill="#3b6fb6" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="5" transform="rotate(-90 925 390)">โหลดครั้งแรก / อัปเดต (HTTPS)</text>
+<path d="M460,437 L470,437 L470,505 L960,505 L960,545 L973,545" fill="none" stroke="#8a9a94" stroke-width="2.2" stroke-dasharray="7 5" marker-end="url(#ah-plan)"/>
+<text x="715" y="498" font-size="13" fill="#8a9a94" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="5">คำถาม + บริบท</text>
+<rect x="30" y="710" width="1340" height="220" rx="18" fill="#f4f0fb" fill-opacity="0.45" stroke="#7a5bb5" stroke-width="2"/><text x="48" y="740" font-size="17" font-weight="700" fill="#3e2a66">เครื่องผู้พัฒนา (ส่วนตัว — ไม่เผยแพร่)</text>
+<rect x="60" y="765" width="330" height="130" rx="12" fill="#f4f0fb" stroke="#7a5bb5" stroke-width="2"/>
+<text x="76" y="795" font-size="17" font-weight="700" fill="#3e2a66">ThaiMed Brain (Obsidian)</text>
+<text x="76" y="819" font-size="14" fill="#5b6f68">คลังความรู้ Markdown 57 โน้ต</text>
+<text x="76" y="840" font-size="14" fill="#5b6f68">มีแหล่งที่มา + สถานะตรวจทาน</text>
+<text x="76" y="861" font-size="14" fill="#5b6f68">บางแหล่งเป็นสไลด์อาจารย์</text>
+<rect x="440" y="765" width="430" height="130" rx="12" fill="#f4f0fb" stroke="#7a5bb5" stroke-width="2"/>
+<text x="456" y="795" font-size="17" font-weight="700" fill="#3e2a66">Private RAG Chat (ใช้งานได้แล้ว)</text>
+<text x="456" y="819" font-size="14" fill="#5b6f68">Gemini embedding → hybrid score</text>
+<text x="456" y="840" font-size="14" fill="#5b6f68">cosine 75% + keyword 25% → top chunks</text>
+<text x="456" y="861" font-size="14" fill="#5b6f68">Gemini ตอบ + อ้างอิงโน้ตต้นทาง</text>
+<rect x="920" y="765" width="420" height="130" rx="12" fill="#f4f0fb" stroke="#7a5bb5" stroke-width="2"/>
+<text x="936" y="795" font-size="17" font-weight="700" fill="#3e2a66">คัดเนื้อหาที่เผยแพร่ได้</text>
+<text x="936" y="819" font-size="14" fill="#5b6f68">ทีมเขียนสรุปด้วยคำของตัวเอง + อ้างอิง</text>
+<text x="936" y="840" font-size="14" fill="#5b6f68">build-knowledge.py → knowledge.json</text>
+<text x="936" y="861" font-size="14" fill="#5b6f68">เข้า repo ผ่าน PR + CI</text>
+<path d="M390,830 L438,830" fill="none" stroke="#7a5bb5" stroke-width="2.2" marker-end="url(#ah-priv)"/>
+<path d="M1130,765 L1130,695 L1387,695 L1387,200 L1347,200" fill="none" stroke="#7a5bb5" stroke-width="2.2" marker-end="url(#ah-priv)"/>
+<text x="1390" y="450" font-size="13" fill="#7a5bb5" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="5" transform="rotate(-90 1390 450)">PR + CI</text>
+</svg>

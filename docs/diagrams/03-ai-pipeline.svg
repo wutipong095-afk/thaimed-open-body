@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 625" width="1400" height="625" font-family="Sarabun, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" role="img" aria-label="AI Knowledge Retrieval — ค้นก่อน แล้วค่อยเรียบเรียง (RAG)">
+<defs><marker id="ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#50635c"/></marker><marker id="ah-plan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a9a94"/></marker><marker id="ah-net" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3b6fb6"/></marker><marker id="ah-priv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7a5bb5"/></marker></defs>
+<rect width="1400" height="625" fill="#ffffff"/>
+<text x="40" y="44" font-size="26" font-weight="700" fill="#16302a">AI Knowledge Retrieval — ค้นก่อน แล้วค่อยเรียบเรียง (RAG)</text>
+<rect x="40" y="120" width="200" height="125" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="56" y="150" font-size="17" font-weight="700" fill="#12463c">1. คำถามผู้ใช้</text>
+<text x="56" y="174" font-size="14" fill="#5b6f68">ข้อความภาษาไทย</text>
+<text x="56" y="195" font-size="14" fill="#5b6f68">+ บริเวณที่เลือกไว้ (ถ้ามี)</text>
+<path d="M240,182 L262,182" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="262" y="120" width="200" height="125" rx="12" fill="#fff4dc" stroke="#d6921f" stroke-width="2"/>
+<text x="278" y="150" font-size="17" font-weight="700" fill="#6b4506">2. หาบริเวณในคำถาม</text>
+<text x="278" y="174" font-size="14" fill="#5b6f68">คำค้น 230 คำ → region_id</text>
+<text x="278" y="195" font-size="14" fill="#5b6f68">ใช้กรองผลค้น</text>
+<path d="M462,182 L484,182" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="484" y="120" width="200" height="125" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="500" y="150" font-size="17" font-weight="700" fill="#12463c">3. ค้นคลังความรู้</text>
+<text x="500" y="174" font-size="14" fill="#5b6f68">ตัดคำไทย + BM25</text>
+<text x="500" y="195" font-size="14" fill="#5b6f68">เพิ่มน้ำหนักเมื่อตรงบริเวณ</text>
+<rect x="586.2" y="108" width="87.8" height="24" rx="12" fill="#1f9e86"/><text x="630.1" y="125" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ทำงานแล้ว</text>
+<path d="M684,182 L706,182" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="706" y="120" width="200" height="125" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="722" y="150" font-size="17" font-weight="700" fill="#12463c">4. เลือกหลักฐาน</text>
+<text x="722" y="174" font-size="14" fill="#5b6f68">top-3 ที่มีแหล่งอ้างอิง</text>
+<text x="722" y="195" font-size="14" fill="#5b6f68">+ สถานะตรวจทาน</text>
+<rect x="808.2" y="108" width="87.8" height="24" rx="12" fill="#1f9e86"/><text x="852.1" y="125" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ทำงานแล้ว</text>
+<path d="M906,182 L928,182" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="928" y="120" width="200" height="125" rx="12" fill="#f6f7f6" stroke="#8a9a94" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="944" y="150" font-size="17" font-weight="700" fill="#4a5a54">5. AI เรียบเรียง</text>
+<text x="944" y="174" font-size="14" fill="#5b6f68">LLM ตอบจากหลักฐาน</text>
+<text x="944" y="195" font-size="14" fill="#5b6f68">ที่ให้เท่านั้น</text>
+<rect x="1030.2" y="108" width="87.8" height="24" rx="12" fill="#8a9a94"/><text x="1074.1" y="125" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Hackathon</text>
+<path d="M1128,182 L1150,182" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="1150" y="120" width="200" height="125" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="1166" y="150" font-size="17" font-weight="700" fill="#12463c">6. คำตอบ</text>
+<text x="1166" y="174" font-size="14" fill="#5b6f68">พร้อมแหล่งอ้างอิงทุกข้อ</text>
+<text x="1166" y="195" font-size="14" fill="#5b6f68">+ disclaimer</text>
+<path d="M840,245 L840,300 L1260,300 L1260,247" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<text x="1050" y="325" font-size="13" fill="#50635c" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="5">ตอนนี้: แสดงหลักฐานที่ค้นได้ให้ผู้ใช้อ่านเองโดยตรง (ยังไม่ใช้ LLM)</text>
+<rect x="40" y="380" width="640" height="205" rx="12" fill="#fdf0ef" stroke="#c0504d" stroke-width="2"/>
+<text x="56" y="410" font-size="17" font-weight="700" fill="#6e1e1c">Guardrails — กติกาความปลอดภัย</text>
+<text x="56" y="434" font-size="14" fill="#5b6f68">• ไม่พบแหล่งอ้างอิง → ตอบว่า “ไม่พบในคลัง” ไม่แต่งคำตอบเอง</text>
+<text x="56" y="455" font-size="14" fill="#5b6f68">• ไม่วินิจฉัยโรค ไม่แนะนำยา</text>
+<text x="56" y="476" font-size="14" fill="#5b6f68">• พบคำสัญญาณอันตราย (แน่นหน้าอก หายใจลำบาก ฯลฯ) → แนะนำพบแพทย์ทันที</text>
+<text x="56" y="497" font-size="14" fill="#5b6f68">• ส่งให้ AI เฉพาะคำถาม + ข้อความที่ค้นได้ ไม่ส่งข้อมูลส่วนตัว</text>
+<text x="56" y="518" font-size="14" fill="#5b6f68">• แสดงสถานะ “ร่าง / ตรวจแล้ว” ของแต่ละแหล่ง</text>
+<text x="56" y="539" font-size="14" fill="#5b6f68">• ผู้เชี่ยวชาญในทีมตรวจเนื้อหาก่อนเผยแพร่เป็น Verified</text>
+<rect x="720" y="380" width="640" height="205" rx="12" fill="#f4f0fb" stroke="#7a5bb5" stroke-width="2"/>
+<text x="736" y="410" font-size="17" font-weight="700" fill="#3e2a66">มีต้นแบบยืนยันความเป็นไปได้แล้ว</text>
+<text x="736" y="434" font-size="14" fill="#5b6f68">Private RAG Chat ในคลังส่วนตัวของทีมทำงานได้จริง:</text>
+<text x="736" y="455" font-size="14" fill="#5b6f68">• แบ่งโน้ตเป็น chunk ตามหัวข้อ (≤1,800 ตัวอักษร)</text>
+<text x="736" y="476" font-size="14" fill="#5b6f68">• Gemini embedding + keyword → hybrid score (75/25)</text>
+<text x="736" y="497" font-size="14" fill="#5b6f68">• Gemini ตอบจาก chunk และคืนลิงก์โน้ตต้นทาง</text>
+<text x="736" y="518" font-size="14" fill="#5b6f68">ช่วง Hackathon: ย้ายแนวทางนี้มาใช้กับคลังสาธารณะ</text>
+<text x="736" y="539" font-size="14" fill="#5b6f68">ผ่าน AI Proxy ที่คุมค่าใช้จ่ายและไม่เก็บข้อมูลผู้ใช้</text>
+</svg>
