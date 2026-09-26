@@ -39,12 +39,13 @@ jobs:
           python scripts/validate-map.py
           python scripts/check-hotspots.py
           python scripts/check-offline.py
+          python scripts/build-knowledge.py --check
 
       - name: Assemble site
         run: |
           mkdir -p _site/data
           cp -r web _site/web
-          cp data/body-pain-map.json data/region-followups.json _site/data/
+          cp data/body-pain-map.json data/region-followups.json data/knowledge.json _site/data/
           printf '<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=web/"><a href="web/">Body Pain Map</a>\n' > _site/index.html
 
       - name: Download and verify 3D model

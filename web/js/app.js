@@ -8,9 +8,12 @@ import {
   sessionToNote,
 } from "./session.js";
 import { bindOfflineControls } from "./offline.js";
+import { KnowledgeIndex, findRedFlags } from "./knowledge.js";
 
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
 const FOLLOWUPS_URL = new URL("../../data/region-followups.json", import.meta.url);
+/** Public knowledge base, built from knowledge/*.md by scripts/build-knowledge.py */
+const KB_URL = new URL("../../data/knowledge.json", import.meta.url);
 /** Optional: only served by scripts/serve-web.py with a local vault */
 const KNOWLEDGE_URL = "/api/knowledge";
 
@@ -26,6 +29,11 @@ const els = {
   modelCredit: document.getElementById("model-credit"),
   followups: document.getElementById("detail-followups"),
   vaultStatus: document.getElementById("vault-status"),
+  knowledge: document.getElementById("detail-knowledge"),
+  askForm: document.getElementById("ask-form"),
+  askInput: document.getElementById("ask-input"),
+  askAlert: document.getElementById("ask-alert"),
+  askResults: document.getElementById("ask-results"),
   vault: document.getElementById("detail-vault"),
   wiki: document.getElementById("detail-wiki"),
   sen: document.getElementById("detail-sen"),
@@ -49,6 +57,8 @@ let regionsById = new Map();
 let aliasIndex = [];
 /** @type {{ default?: string[], by_id?: Record<string, string[]> } | null} */
 let followupsDoc = null;
+/** @type {KnowledgeIndex | null} */
+let knowledgeIndex = null;
 let activeId = null;
 let knowledgeSeq = 0;
 let mode = "2d";
@@ -109,8 +119,7 @@ function setRole(role) {
 function renderVault(fromVault) {
   els.vault.innerHTML = "";
   if (!fromVault || !fromVault.available) {
-    els.vaultStatus.textContent =
-      "ยังไม่เชื่อมคลังท้องถิ่น — ใช้คำอธิบายจากแผนที่ได้ตามปกติ";
+    els.vaultStatus.textContent = noVaultMessage();
     return;
   }
 
@@ -148,9 +157,82 @@ async function loadKnowledge(regionId) {
     renderVault(data.from_vault);
   } catch {
     if (seq !== knowledgeSeq || activeId !== regionId) return;
-    els.vaultStatus.textContent =
-      "ไม่ได้เชื่อมคลังความรู้ — ใช้คำอธิบายจากแผนที่ได้ตามปกติ (คลังใช้ได้เมื่อรัน serve-web.py)";
+    els.vaultStatus.textContent = noVaultMessage();
   }
+}
+
+/** Status line when the private vault (serve-web.py) is not available */
+function noVaultMessage() {
+  return els.knowledge.childElementCount ? "" : "ยังไม่มีเนื้อหาในคลังสำหรับบริเวณนี้";
+}
+
+const STATUS_LABEL = { draft: "ร่าง · รอผู้เชี่ยวชาญตรวจ", reviewed: "ตรวจแล้ว", verified: "Verified" };
+
+function knowledgeCard(chunk) {
+  const card = document.createElement("div");
+  card.className = "vault-card";
+  const h = document.createElement("h4");
+  h.textContent = chunk.title;
+  const meta = document.createElement("div");
+  meta.className = "k-meta";
+  const section = document.createElement("span");
+  section.className = "k-section";
+  section.textContent = chunk.section;
+  const badge = document.createElement("span");
+  badge.className = `k-badge is-${chunk.review_status}`;
+  badge.textContent = STATUS_LABEL[chunk.review_status] || chunk.review_status;
+  meta.append(section, badge);
+  const p = document.createElement("p");
+  p.textContent = chunk.text;
+  const src = document.createElement("p");
+  src.className = "k-source";
+  src.textContent = `แหล่งอ้างอิง: ${chunk.source}`;
+  if (/^https:\/\//.test(chunk.source_url || "")) {
+    const a = document.createElement("a");
+    a.href = chunk.source_url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = "เปิดแหล่งที่มา";
+    src.append(" · ", a);
+  }
+  card.append(h, meta, p, src);
+  return card;
+}
+
+function renderRegionKnowledge(regionId) {
+  els.knowledge.replaceChildren(
+    ...(knowledgeIndex
+      ? knowledgeIndex.forRegion(regionId, regionsById.get(regionId)?.name_th).map(knowledgeCard)
+      : [])
+  );
+}
+
+function bindAsk() {
+  els.askForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const q = els.askInput.value.trim();
+    els.askResults.replaceChildren();
+    if (!q) return;
+    const flags = findRedFlags(q);
+    els.askAlert.hidden = flags.length === 0;
+    els.askAlert.textContent = flags.length
+      ? `พบอาการที่ควรพบแพทย์โดยเร็ว (${flags.join(", ")}) — เครื่องมือนี้ไม่ใช่การวินิจฉัย หากอาการรุนแรงโทร 1669`
+      : "";
+    if (!knowledgeIndex) {
+      els.askResults.textContent = "คลังความรู้ยังโหลดไม่เสร็จ — ลองอีกครั้ง";
+      return;
+    }
+    const regionId = resolveRegionId(q, aliasIndex) || activeId;
+    const hits = knowledgeIndex.search(q, { regionId });
+    if (!hits.length) {
+      const none = document.createElement("p");
+      none.className = "vault-status";
+      none.textContent = "ไม่พบในคลังความรู้ — ระบบจะไม่เดาคำตอบเอง ลองใช้คำอื่น หรือถามผู้ประกอบวิชาชีพ";
+      els.askResults.append(none);
+      return;
+    }
+    els.askResults.append(...hits.map((h) => knowledgeCard(h.chunk)));
+  });
 }
 
 function showRegion(regionId, options = {}) {
@@ -196,6 +278,7 @@ function showRegion(regionId, options = {}) {
   fillList(els.sen, region.sen_refs, "—");
   fillList(els.followups, followupsFor(region.id), "—");
   els.vault.innerHTML = "";
+  renderRegionKnowledge(region.id);
 
   if (!options.skipSession) {
     const label = muscleLabel
@@ -455,6 +538,15 @@ async function loadFollowups() {
   }
 }
 
+async function loadKnowledgeBase() {
+  try {
+    const res = await fetch(KB_URL);
+    if (res.ok) knowledgeIndex = new KnowledgeIndex(await res.json());
+  } catch {
+    /* knowledge search is optional */
+  }
+}
+
 async function loadMap() {
   const res = await fetch(MAP_URL);
   if (!res.ok) {
@@ -473,6 +565,7 @@ async function main() {
   bindRoleToggle();
   bindSessionActions();
   bindSearch();
+  bindAsk();
   registerServiceWorker();
   bindOfflineControls({
     status: document.getElementById("offline-status"),
@@ -484,7 +577,7 @@ async function main() {
   setView("anterior");
   setMode("2d");
   try {
-    await Promise.all([loadMap(), loadFollowups()]);
+    await Promise.all([loadMap(), loadFollowups(), loadKnowledgeBase()]);
   } catch (err) {
     els.disclaimer.textContent = String(err.message || err);
     showFeedback(String(err.message || err));

@@ -182,6 +182,7 @@
 
             <section class="source-block learner-only" id="vault-block">
               <p class="source-label">จากคลัง</p>
+              <div id="detail-knowledge" class="vault-excerpts"></div>
               <p id="vault-status" class="vault-status"></p>
               <div id="detail-vault" class="vault-excerpts"></div>
             </section>
@@ -199,6 +200,19 @@
             <p class="meta-line learner-only"><span>รหัสโซน</span> <code id="detail-id"></code></p>
           </div>
         </article>
+
+        <section class="session-box ask-box" aria-label="ถามคลังความรู้">
+          <form id="ask-form" class="search">
+            <label for="ask-input">ถามคลังความรู้</label>
+            <div class="search-row">
+              <input id="ask-input" type="search" placeholder="เช่น ยักไหล่แล้วปวดบ่า, เจ็บระหว่างสะบัก" autocomplete="off" />
+              <button type="submit">ค้น</button>
+            </div>
+          </form>
+          <p id="ask-alert" class="ask-alert" role="alert" hidden></p>
+          <div id="ask-results" class="vault-excerpts"></div>
+          <p class="session-note">ค้นในเครื่องจากเนื้อหาที่มีแหล่งอ้างอิงเท่านั้น · ไม่ใช่การวินิจฉัย</p>
+        </section>
 
         <section class="session-box" aria-label="ประวัติในเครื่อง">
           <div class="session-head">
