@@ -1,0 +1,124 @@
+{
+ "version": 1,
+ "license": "CC BY-SA 4.0",
+ "chunks": [
+  {
+   "id": "neck-shoulder-muscles#1",
+   "doc": "neck-shoulder-muscles",
+   "title": "กล้ามเนื้อหลักบริเวณคอ–บ่า–ไหล่",
+   "section": "กล้ามเนื้อทราพีเซียส (Trapezius) — “บ่า”",
+   "regions": [
+    "cervical_posterior",
+    "cervical_anterior",
+    "upper_back",
+    "shoulder_left",
+    "shoulder_right",
+    "scapula_left",
+    "scapula_right"
+   ],
+   "text": "กล้ามเนื้อแผ่นใหญ่รูปสี่เหลี่ยมคางหมู คลุมด้านหลังของคอและหลังส่วนบน เกาะจากฐานกะโหลกด้านหลังและแนวกระดูกสันหลังส่วนคอถึงส่วนอก ไปยังกระดูกไหปลาร้าและกระดูกสะบัก เส้นใยส่วนบนยกสะบักขึ้น เช่น ตอนยักไหล่ ส่วนกลางดึงสะบักเข้าหาแนวกระดูกสันหลัง และส่วนล่างกดสะบักลง บริเวณที่คนทั่วไปเรียกว่า “บ่า” คือส่วนบนของกล้ามเนื้อนี้",
+   "source": "OpenStax, Anatomy and Physiology 2e (2022), บทที่ 11 หัวข้อ 11.3 และ 11.5",
+   "source_url": "https://openstax.org/details/books/anatomy-and-physiology-2e",
+   "author": "ทีม ThaiMed Open Body (สรุปด้วยคำของทีม)",
+   "review_status": "draft"
+  },
+  {
+   "id": "neck-shoulder-muscles#2",
+   "doc": "neck-shoulder-muscles",
+   "title": "กล้ามเนื้อหลักบริเวณคอ–บ่า–ไหล่",
+   "section": "กล้ามเนื้อยกสะบัก (Levator scapulae)",
+   "regions": [
+    "cervical_posterior",
+    "cervical_anterior",
+    "upper_back",
+    "shoulder_left",
+    "shoulder_right",
+    "scapula_left",
+    "scapula_right"
+   ],
+   "text": "อยู่ด้านข้างค่อนไปทางหลังของคอ ใต้กล้ามเนื้อทราพีเซียส เกาะจากกระดูกสันหลังส่วนคอข้อบน ๆ ลงไปที่มุมบนด้านในของกระดูกสะบัก ทำหน้าที่ยกสะบักขึ้น และช่วยเอียงคอไปด้านเดียวกัน",
+   "source": "OpenStax, Anatomy and Physiology 2e (2022), บทที่ 11 หัวข้อ 11.3 และ 11.5",
+   "source_url": "https://openstax.org/details/books/anatomy-and-physiology-2e",
+   "author": "ทีม ThaiMed Open Body (สรุปด้วยคำของทีม)",
+   "review_status": "draft"
+  },
+  {
+   "id": "neck-shoulder-muscles#3",
+   "doc": "neck-shoulder-muscles",
+   "title": "กล้ามเนื้อหลักบริเวณคอ–บ่า–ไหล่",
+   "section": "กล้ามเนื้อรอมบอยด์ (Rhomboids)",
+   "regions": [
+    "cervical_posterior",
+    "cervical_anterior",
+    "upper_back",
+    "shoulder_left",
+    "shoulder_right",
+    "scapula_left",
+    "scapula_right"
+   ],
+   "text": "อยู่ระหว่างแนวกระดูกสันหลังส่วนอกกับขอบด้านในของกระดูกสะบัก ใต้กล้ามเนื้อทราพีเซียส ทำหน้าที่ดึงสะบักเข้าหาแนวกระดูกสันหลัง เช่น ตอนบีบสะบักเข้าหากัน ตำแหน่งนี้ตรงกับที่ผู้รับบริการมักบอกว่า “เจ็บระหว่างสะบัก”",
+   "source": "OpenStax, Anatomy and Physiology 2e (2022), บทที่ 11 หัวข้อ 11.3 และ 11.5",
+   "source_url": "https://openstax.org/details/books/anatomy-and-physiology-2e",
+   "author": "ทีม ThaiMed Open Body (สรุปด้วยคำของทีม)",
+   "review_status": "draft"
+  },
+  {
+   "id": "neck-shoulder-muscles#4",
+   "doc": "neck-shoulder-muscles",
+   "title": "กล้ามเนื้อหลักบริเวณคอ–บ่า–ไหล่",
+   "section": "กล้ามเนื้อสเตอร์โนไคลโดมาสตอยด์ (Sternocleidomastoid)",
+   "regions": [
+    "cervical_posterior",
+    "cervical_anterior",
+    "upper_back",
+    "shoulder_left",
+    "shoulder_right",
+    "scapula_left",
+    "scapula_right"
+   ],
+   "text": "อยู่ด้านหน้าค่อนข้างของคอ เกาะจากกระดูกอกและกระดูกไหปลาร้า ขึ้นไปที่ปุ่มกระดูกหลังหู เมื่อหดข้างเดียวจะหมุนศีรษะไปด้านตรงข้ามและเอียงคอไปด้านเดียวกัน เมื่อหดทั้งสองข้างจะช่วยก้มคอ",
+   "source": "OpenStax, Anatomy and Physiology 2e (2022), บทที่ 11 หัวข้อ 11.3 และ 11.5",
+   "source_url": "https://openstax.org/details/books/anatomy-and-physiology-2e",
+   "author": "ทีม ThaiMed Open Body (สรุปด้วยคำของทีม)",
+   "review_status": "draft"
+  },
+  {
+   "id": "shoulder-joint#1",
+   "doc": "shoulder-joint",
+   "title": "ข้อไหล่และกลุ่มกล้ามเนื้อหมุนไหล่ (Rotator cuff)",
+   "section": "ข้อไหล่: เคลื่อนไหวได้มาก แต่มั่นคงน้อย",
+   "regions": [
+    "shoulder_left",
+    "shoulder_right",
+    "scapula_left",
+    "scapula_right",
+    "upper_arm_left",
+    "upper_arm_right"
+   ],
+   "text": "ข้อไหล่ (glenohumeral joint) เป็นข้อต่อแบบลูกกลมในเบ้า ระหว่างหัวกระดูกต้นแขนกับเบ้าตื้น ๆ ของกระดูกสะบัก เบ้าที่ตื้นทำให้ไหล่เคลื่อนไหวได้กว้างที่สุดในร่างกาย แต่ก็ทำให้มั่นคงน้อยและบาดเจ็บหรือเคลื่อนหลุดได้ง่ายกว่าข้ออื่น ความมั่นคงส่วนใหญ่จึงมาจากกล้ามเนื้อและเอ็นรอบข้อ",
+   "source": "OpenStax, Anatomy and Physiology 2e (2022), บทที่ 9 หัวข้อ 9.6 และบทที่ 11 หัวข้อ 11.5",
+   "source_url": "https://openstax.org/details/books/anatomy-and-physiology-2e",
+   "author": "ทีม ThaiMed Open Body (สรุปด้วยคำของทีม)",
+   "review_status": "draft"
+  },
+  {
+   "id": "shoulder-joint#2",
+   "doc": "shoulder-joint",
+   "title": "ข้อไหล่และกลุ่มกล้ามเนื้อหมุนไหล่ (Rotator cuff)",
+   "section": "กล้ามเนื้อหมุนไหล่ 4 มัด (Rotator cuff)",
+   "regions": [
+    "shoulder_left",
+    "shoulder_right",
+    "scapula_left",
+    "scapula_right",
+    "upper_arm_left",
+    "upper_arm_right"
+   ],
+   "text": "กลุ่มกล้ามเนื้อ 4 มัดที่เกาะจากกระดูกสะบักไปหุ้มรอบหัวกระดูกต้นแขน ได้แก่ ซูปราสไปนาตัส (supraspinatus) อินฟราสไปนาตัส (infraspinatus) เทอเรสไมเนอร์ (teres minor) และซับสแคปูลาริส (subscapularis) ทำหน้าที่ยึดหัวกระดูกต้นแขนให้อยู่ในเบ้าขณะขยับแขน และช่วยหมุนแขนเข้า–ออก การใช้แขนยกของเหนือศีรษะซ้ำ ๆ จึงมักเกี่ยวข้องกับอาการที่บริเวณนี้",
+   "source": "OpenStax, Anatomy and Physiology 2e (2022), บทที่ 9 หัวข้อ 9.6 และบทที่ 11 หัวข้อ 11.5",
+   "source_url": "https://openstax.org/details/books/anatomy-and-physiology-2e",
+   "author": "ทีม ThaiMed Open Body (สรุปด้วยคำของทีม)",
+   "review_status": "draft"
+  }
+ ]
+}

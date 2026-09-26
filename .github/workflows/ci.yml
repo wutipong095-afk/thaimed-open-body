@@ -28,6 +28,9 @@ jobs:
       - name: Check 2D hotspots (ids + left/right sides)
         run: python scripts/check-hotspots.py
 
+      - name: Knowledge base is valid and data/knowledge.json is up to date
+        run: python scripts/build-knowledge.py --check
+
       - name: Check offline build (no CDN, sw.js cache list, CSP hash, MODEL_CACHE)
         run: python scripts/check-offline.py
 

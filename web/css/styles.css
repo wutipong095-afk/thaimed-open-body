@@ -392,6 +392,59 @@ body.role-patient .learner-only {
   white-space: pre-wrap;
 }
 
+.k-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.35rem;
+}
+
+.k-section {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.k-badge {
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.k-badge.is-reviewed,
+.k-badge.is-verified {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.vault-card p.k-source {
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.k-source a {
+  color: var(--accent);
+}
+
+.ask-box .search {
+  margin-bottom: 0.6rem;
+}
+
+.ask-alert {
+  margin: 0 0 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 150, 140, 0.45);
+  background: rgba(255, 120, 110, 0.1);
+  color: #ffc9c2;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .vault-card.is-missing {
   opacity: 0.7;
 }
