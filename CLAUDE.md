@@ -25,6 +25,7 @@ memory ของ Claude บนเครื่อง local ไม่ตามไ�
 python scripts/serve-web.py          # http://127.0.0.1:8787/web/  (ต้องเสิร์ฟผ่าน HTTP)
 python scripts/validate-map.py       # ตรวจ data/body-pain-map.json
 python scripts/check-hotspots.py     # ตรวจจุดคลิก 2D ใน web/index.html
+python scripts/check-offline.py      # ไม่มี CDN · sw.js cache ครบ · CSP hash ตรง importmap
 for f in web/js/*.js web/sw.js; do node --check "$f"; done
 ```
 
@@ -50,5 +51,10 @@ for f in web/js/*.js web/sw.js; do node --check "$f"; done
 - `web/index.html` — SVG 2D hotspots (`data-region`)
 - `web/js/muscleRegion.js` — map ชื่อกล้ามเนื้อใน GLB → `region_id`; ระวังการ map ข้ามแขน/ขา (เช่น มือ→น่อง, เท้า→แขน)
 - `web/sen/` + `web/js/sen*.js` — หน้าสอนเส้นประธาน 10 (มาร์กเส้นทาง 3D ด้วยมือ เก็บใน localStorage)
+- **Offline-first / Local-first:** แอปต้องทำงานบนเครื่องผู้ใช้ได้โดยไม่ต้องมีเซิร์ฟเวอร์
+  - ห้ามโหลดสคริปต์/ฟอนต์/ไฟล์จาก CDN — ไลบรารีภายนอกอยู่ใน `web/vendor/` (ดู README ในนั้น)
+  - เพิ่มหรือเปลี่ยนไฟล์ใน `web/` → อัปเดต `ASSETS` และเปลี่ยนชื่อ `SHELL_CACHE` ใน `web/sw.js`
+  - แก้ `<script type="importmap">` → อัปเดต sha256 ใน CSP (`check-offline.py` บอกค่าที่ถูก)
+  - ห้ามเก็บข้อมูลผู้ใช้บนเซิร์ฟเวอร์ ห้ามเพิ่มระบบจ่ายเงิน/ล็อกอิน · ห้ามใส่ API key ในหน้าเว็บ
 - ซ้าย/ขวา = ของผู้ป่วยเสมอ: มุมมองหน้า (anterior) ขวาของผู้ป่วยอยู่ทางซ้ายของจอ · มุมมองหลัง (posterior) ขวาของผู้ป่วยอยู่ทางขวาของจอ
 - สถานะงานล่าสุด: `docs/hotcache.md` · แผน: `docs/roadmap.md` — อัปเดต hotcache เมื่อจบงานสำคัญ
