@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 790" width="1400" height="790" font-family="Sarabun, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" role="img" aria-label="Data Flow — จากการชี้ร่างกาย สู่ข้อมูลที่เกี่ยวข้อง">
+<defs><marker id="ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#50635c"/></marker><marker id="ah-plan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a9a94"/></marker><marker id="ah-net" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3b6fb6"/></marker><marker id="ah-priv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7a5bb5"/></marker></defs>
+<rect width="1400" height="790" fill="#ffffff"/>
+<text x="40" y="44" font-size="26" font-weight="700" fill="#16302a">Data Flow — จากการชี้ร่างกาย สู่ข้อมูลที่เกี่ยวข้อง</text>
+<text x="40" y="92" font-size="15" font-weight="700" fill="#1f9e86" text-anchor="start">INPUT · ผู้ใช้ป้อน</text>
+<text x="420" y="92" font-size="15" font-weight="700" fill="#1f9e86" text-anchor="start">PROCESS · ระบบประมวลผล</text>
+<text x="815" y="92" font-size="15" font-weight="700" fill="#1f9e86" text-anchor="start">KEY</text>
+<text x="1080" y="92" font-size="15" font-weight="700" fill="#1f9e86" text-anchor="start">OUTPUT · สิ่งที่แสดง</text>
+<rect x="40" y="130" width="300" height="110" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="56" y="160" font-size="17" font-weight="700" fill="#12463c">① คลิกบนร่าง 2D</text>
+<text x="56" y="184" font-size="14" fill="#5b6f68">ด้านหน้า / ด้านหลัง</text>
+<text x="56" y="205" font-size="14" fill="#5b6f68">37 บริเวณ แยกซ้าย–ขวา</text>
+<rect x="40" y="300" width="300" height="110" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="56" y="330" font-size="17" font-weight="700" fill="#12463c">② คลิกกล้ามเนื้อบนโมเดล 3D</text>
+<text x="56" y="354" font-size="14" fill="#5b6f68">โมเดล Z-Anatomy</text>
+<text x="56" y="375" font-size="14" fill="#5b6f68">820 ส่วน หมุน/ซูมได้</text>
+<rect x="40" y="470" width="300" height="110" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="56" y="500" font-size="17" font-weight="700" fill="#12463c">③ พิมพ์อาการเป็นภาษาไทย</text>
+<text x="56" y="524" font-size="14" fill="#5b6f68">เช่น “ปวดบ่าขวาเมื่อย”</text>
+<text x="56" y="545" font-size="14" fill="#5b6f68">หรือ “เอวซ้าย”</text>
+<rect x="420" y="130" width="330" height="110" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="436" y="160" font-size="17" font-weight="700" fill="#12463c">จุดคลิกผูกกับรหัสบริเวณ</text>
+<text x="436" y="184" font-size="14" fill="#5b6f68">แต่ละจุดบน SVG มี data-region</text>
+<text x="436" y="205" font-size="14" fill="#5b6f68">จับคู่ตรง 1 ต่อ 1</text>
+<path d="M340,185 L420,185" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<path d="M750,185 L790,185 L790,355 L812,355" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="420" y="300" width="330" height="110" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="436" y="330" font-size="17" font-weight="700" fill="#12463c">Raycast → ชื่อกล้ามเนื้อ → บริเวณ</text>
+<text x="436" y="354" font-size="14" fill="#5b6f68">หาชิ้นที่ถูกคลิก แล้วแปลงชื่อเป็นบริเวณ</text>
+<text x="436" y="375" font-size="14" fill="#5b6f68">ซ้าย/ขวา จากชื่อหรือพิกัด 3 มิติ</text>
+<path d="M340,355 L420,355" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<path d="M750,355 L790,355 L790,355 L812,355" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="420" y="470" width="330" height="110" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="436" y="500" font-size="17" font-weight="700" fill="#12463c">จับคู่คำค้น 230 คำ</text>
+<text x="436" y="524" font-size="14" fill="#5b6f68">เลือกคำที่ยาวที่สุดที่ตรงกับข้อความ</text>
+<text x="436" y="545" font-size="14" fill="#5b6f68">ไม่ระบุข้าง → ระบบถามกลับ</text>
+<path d="M340,525 L420,525" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<path d="M750,525 L790,525 L790,355 L812,355" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="815" y="290" width="190" height="130" rx="12" fill="#fff4dc" stroke="#d6921f" stroke-width="2"/>
+<text x="831" y="320" font-size="17" font-weight="700" fill="#6b4506">region_id</text>
+<text x="831" y="344" font-size="14" fill="#5b6f68">เช่น scapula_left</text>
+<text x="831" y="365" font-size="14" fill="#5b6f68">กุญแจกลางของ</text>
+<text x="831" y="386" font-size="14" fill="#5b6f68">ทุกช่องทาง</text>
+<rect x="1080" y="110" width="290" height="85" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="1096" y="140" font-size="17" font-weight="700" fill="#12463c">คำอธิบายสำหรับผู้รับบริการ</text>
+<text x="1096" y="164" font-size="14" fill="#5b6f68">body-pain-map.json</text>
+<path d="M1005,355 L1040,355 L1040,152 L1078,152" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="1080" y="215" width="290" height="85" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="1096" y="245" font-size="17" font-weight="700" fill="#12463c">คำถามซักอาการ</text>
+<text x="1096" y="269" font-size="14" fill="#5b6f68">+ คำเตือนสัญญาณอันตราย</text>
+<path d="M1005,355 L1040,355 L1040,257 L1078,257" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="1080" y="320" width="290" height="85" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="1096" y="350" font-size="17" font-weight="700" fill="#12463c">ชั้นโครงสร้าง + เส้นประธาน</text>
+<text x="1096" y="374" font-size="14" fill="#5b6f68">โหมดผู้เรียน</text>
+<path d="M1005,355 L1040,355 L1040,362 L1078,362" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="1080" y="425" width="290" height="85" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="1096" y="455" font-size="17" font-weight="700" fill="#12463c">ความรู้จากคลัง + แหล่งอ้างอิง</text>
+<text x="1096" y="479" font-size="14" fill="#5b6f68">knowledge.json · ค้นในเครื่อง</text>
+<path d="M1005,355 L1040,355 L1040,467 L1078,467" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="1080" y="530" width="290" height="85" rx="12" fill="#eef8f5" stroke="#1f9e86" stroke-width="2"/>
+<text x="1096" y="560" font-size="17" font-weight="700" fill="#12463c">บันทึกในเครื่อง → ส่งออก .md</text>
+<text x="1096" y="584" font-size="14" fill="#5b6f68">localStorage · ไม่ส่งขึ้นเซิร์ฟเวอร์</text>
+<path d="M1005,355 L1040,355 L1040,572 L1078,572" fill="none" stroke="#50635c" stroke-width="2.2" marker-end="url(#ah-d)"/>
+<rect x="40" y="650" width="1330" height="90" rx="12" fill="#eef3fb" stroke="#3b6fb6" stroke-width="2"/>
+<text x="56" y="680" font-size="17" font-weight="700" fill="#1d3a66">ทั้งหมดทำงานในเบราว์เซอร์ของผู้ใช้</text>
+<text x="56" y="704" font-size="14" fill="#5b6f68">ไม่ต้องมีบัญชี · ไม่ส่งข้อมูลอาการขึ้นเซิร์ฟเวอร์ · ใช้ออฟไลน์ได้หลังเปิดครั้งแรก (PWA)</text>
+</svg>
