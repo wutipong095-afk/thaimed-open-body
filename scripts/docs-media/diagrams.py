@@ -96,7 +96,7 @@ class Svg:
 
     def save(self, name):
         self.parts.append("</svg>")
-        (OUT / name).write_text("\n".join(self.parts), encoding="utf-8")
+        (OUT / name).write_text("\n".join(self.parts), encoding="utf-8", newline="\n")
 
 
 # ---------------------------------------------------------------- 1. Data flow
