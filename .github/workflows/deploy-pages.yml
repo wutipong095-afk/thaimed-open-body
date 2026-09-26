@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+# Publishes only the static app (web/ + data/*.json). No server, no secrets.
+# The 3D model is not in git: it is downloaded from the GitHub Release
+# tagged MODEL_TAG and checked against web/models/*.sha256 before publishing.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  MODEL_TAG: model-v1
+  MODEL_FILE: zanatomy-muscles-web.glb
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Checks
+        run: |
+          python scripts/validate-map.py
+          python scripts/check-hotspots.py
+          python scripts/check-offline.py
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site/data
+          cp -r web _site/web
+          cp data/body-pain-map.json data/region-followups.json _site/data/
+          printf '<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=web/"><a href="web/">Body Pain Map</a>\n' > _site/index.html
+
+      - name: Download and verify 3D model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$MODEL_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$MODEL_FILE" --dir _site/web/models
+          cd _site/web/models && sha256sum --check "$MODEL_FILE.sha256"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
