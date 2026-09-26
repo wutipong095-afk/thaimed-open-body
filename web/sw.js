@@ -1,7 +1,7 @@
 /* Offline-first shell: the whole app runs from this device after the first visit.
  * The 3D model (~23 MB) is cached separately, only when the user asks for it
  * (see js/offline.js). Bump SHELL_CACHE whenever any file in ASSETS changes. */
-const SHELL_CACHE = "body-pain-shell-v2";
+const SHELL_CACHE = "body-pain-shell-v3";
 const MODEL_CACHE = "body-pain-model-v1";
 const KEEP = [SHELL_CACHE, MODEL_CACHE];
 
