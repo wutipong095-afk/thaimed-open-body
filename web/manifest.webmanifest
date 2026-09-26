@@ -1,6 +1,6 @@
 {
-  "name": "Body Pain Map",
-  "short_name": "PainMap",
+  "name": "ThaiMed Open Body",
+  "short_name": "ThaiMed Body",
   "description": "สื่อสารตำแหน่งอาการเจ็บปวด — เพื่อการศึกษา ไม่ใช่การวินิจฉัย",
   "start_url": "./",
   "scope": "./",
