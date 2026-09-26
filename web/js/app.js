@@ -7,8 +7,11 @@ import {
   pushSessionItem,
   sessionToNote,
 } from "./session.js";
+import { bindOfflineControls } from "./offline.js";
 
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
+const FOLLOWUPS_URL = new URL("../../data/region-followups.json", import.meta.url);
+/** Optional: only served by scripts/serve-web.py with a local vault */
 const KNOWLEDGE_URL = "/api/knowledge";
 
 const els = {
@@ -44,6 +47,8 @@ const els = {
 
 let regionsById = new Map();
 let aliasIndex = [];
+/** @type {{ default?: string[], by_id?: Record<string, string[]> } | null} */
+let followupsDoc = null;
 let activeId = null;
 let knowledgeSeq = 0;
 let mode = "2d";
@@ -135,23 +140,16 @@ async function loadKnowledge(regionId) {
     const res = await fetch(`${KNOWLEDGE_URL}?region_id=${encodeURIComponent(regionId)}`);
     const data = await res.json();
     if (seq !== knowledgeSeq || activeId !== regionId) return;
+    if (data.offline) throw new Error("offline");
     if (!data.ok) {
       els.vaultStatus.textContent = "โหลดความรู้เสริมไม่ได้ — ใช้แผนที่อย่างเดียว";
-      fillList(els.followups, [], "—");
       return;
     }
-    if (data.from_map?.blurb_th) {
-      els.blurb.textContent = data.from_map.blurb_th;
-    }
-    fillList(els.followups, data.followups?.questions || [], "—");
-    fillList(els.wiki, data.from_map?.wiki_refs || [], "—");
-    fillList(els.sen, data.from_map?.sen_refs || [], "—");
     renderVault(data.from_vault);
   } catch {
     if (seq !== knowledgeSeq || activeId !== regionId) return;
     els.vaultStatus.textContent =
-      "เซิร์ฟเวอร์ความรู้ไม่พร้อม — ใช้คำอธิบายจากแผนที่ (รีสตาร์ท serve-web.py ถ้าต้องการคลัง)";
-    fillList(els.followups, [], "—");
+      "ไม่ได้เชื่อมคลังความรู้ — ใช้คำอธิบายจากแผนที่ได้ตามปกติ (คลังใช้ได้เมื่อรัน serve-web.py)";
   }
 }
 
@@ -196,7 +194,7 @@ function showRegion(regionId, options = {}) {
   els.id.textContent = region.id;
   fillList(els.wiki, region.wiki_refs, "—");
   fillList(els.sen, region.sen_refs, "—");
-  fillList(els.followups, ["กำลังโหลด…"], "—");
+  fillList(els.followups, followupsFor(region.id), "—");
   els.vault.innerHTML = "";
 
   if (!options.skipSession) {
@@ -443,6 +441,20 @@ function registerServiceWorker() {
   });
 }
 
+function followupsFor(regionId) {
+  if (!followupsDoc) return [];
+  return followupsDoc.by_id?.[regionId] || followupsDoc.default || [];
+}
+
+async function loadFollowups() {
+  try {
+    const res = await fetch(FOLLOWUPS_URL);
+    if (res.ok) followupsDoc = await res.json();
+  } catch {
+    /* follow-up questions are optional */
+  }
+}
+
 async function loadMap() {
   const res = await fetch(MAP_URL);
   if (!res.ok) {
@@ -462,12 +474,17 @@ async function main() {
   bindSessionActions();
   bindSearch();
   registerServiceWorker();
+  bindOfflineControls({
+    status: document.getElementById("offline-status"),
+    download: document.getElementById("btn-offline-download"),
+    remove: document.getElementById("btn-offline-remove"),
+  });
   setRole(session.role);
   renderSessionList();
   setView("anterior");
   setMode("2d");
   try {
-    await loadMap();
+    await Promise.all([loadMap(), loadFollowups()]);
   } catch (err) {
     els.disclaimer.textContent = String(err.message || err);
     showFeedback(String(err.message || err));

@@ -2,6 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-xfqqo4623wQ275Jas1CaNQg38bxkfCpPuxy+CnQiXRQ='; worker-src 'self' blob:; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#3dceb0" />
   <meta name="description" content="สื่อสารตำแหน่งอาการเจ็บปวด — เพื่อการศึกษา ไม่ใช่การวินิจฉัย" />
@@ -9,15 +10,13 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icons/icon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="vendor/fonts/fonts.css" />
   <link rel="stylesheet" href="css/styles.css" />
   <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
     }
   }
   </script>
@@ -213,6 +212,21 @@
           <p class="session-note">เก็บเฉพาะในเบราว์เซอร์นี้ · ไม่ส่งขึ้นคลาวด์</p>
         </section>
 
+        <section class="session-box" aria-label="ใช้งานออฟไลน์">
+          <div class="session-head">
+            <h3>ใช้งานบนเครื่องนี้</h3>
+            <div class="session-actions">
+              <button type="button" id="btn-offline-download" class="ghost-btn">ดาวน์โหลดโมเดล 3D</button>
+              <button type="button" id="btn-offline-remove" class="ghost-btn" hidden>ลบโมเดล 3D</button>
+            </div>
+          </div>
+          <p id="offline-status" class="session-note"></p>
+        </section>
+
+        <p class="free-notice">
+          <strong>ใช้ฟรี ไม่มีค่าใช้จ่าย</strong> — แอปนี้ไม่ขอเงิน เลขบัญชี บัตร หรือรหัสผ่านใด ๆ
+          ถ้าพบหน้าที่ขอข้อมูลเหล่านี้ แสดงว่าไม่ใช่แอปของเรา
+        </p>
         <p id="disclaimer" class="disclaimer"></p>
       </aside>
     </main>

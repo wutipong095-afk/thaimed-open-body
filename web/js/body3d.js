@@ -13,7 +13,9 @@ import {
 } from "./muscleRegion.js";
 import { formatMuscleLabelThEn } from "./muscleNames.js";
 
-const MODEL_URL = new URL("../models/zanatomy-muscles-web.glb", import.meta.url).href;
+export const MODEL_URL = new URL("../models/zanatomy-muscles-web.glb", import.meta.url).href;
+/** Self-hosted Draco decoder (see web/vendor/README.md) */
+const DRACO_PATH = new URL("../vendor/draco/", import.meta.url).href;
 
 const COLOR_IDLE = 0x3a6b5c;
 const COLOR_HOVER = 0x5ee0c0;
@@ -135,7 +137,7 @@ export class Body3D {
   _loadModel() {
     this.onStatus("กำลังโหลดโมเดลกล้ามเนื้อ (Z-Anatomy)…");
     const draco = new DRACOLoader();
-    draco.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.7/");
+    draco.setDecoderPath(DRACO_PATH);
     const loader = new GLTFLoader();
     loader.setDRACOLoader(draco);
 
