@@ -611,3 +611,14 @@ body.role-patient .learner-only {
     transition: none;
   }
 }
+
+/* Local expert review workflow */
+body:not(.role-expert) .expert-only { display: none; }
+.review-panel { margin-top: 1rem; border-top: 1px solid #b8cfc8; padding-top: .75rem; }
+.review-summary { font-size: .85rem; font-weight: 600; }
+.review-form { display: grid; gap: .65rem; margin-top: .75rem; }
+.review-form label { display: grid; gap: .3rem; font-size: .9rem; }
+.review-form input, .review-form textarea, .review-form select { width: 100%; box-sizing: border-box; font: inherit; padding: .6rem; border: 1px solid #9eb8b0; border-radius: .4rem; background: #fff; color: #183c34; }
+.review-form textarea { min-height: 5rem; resize: vertical; }
+.review-form p, .review-panel li { font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-panel li { margin-bottom: .75rem; }

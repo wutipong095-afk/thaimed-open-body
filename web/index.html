@@ -33,6 +33,7 @@
         <div class="view-toggle" role="group" aria-label="บทบาทผู้ใช้">
           <button type="button" class="role-btn is-active" data-role="patient">ผู้ป่วย</button>
           <button type="button" class="role-btn" data-role="learner">ผู้เรียน</button>
+          <button type="button" class="role-btn" data-role="expert">ผู้เชี่ยวชาญ</button>
         </div>
         <div class="view-toggle" role="group" aria-label="โหมดแสดงผล">
           <button type="button" class="mode-btn is-active" data-mode="2d">2D</button>
@@ -187,6 +188,8 @@
               <div id="detail-vault" class="vault-excerpts"></div>
             </section>
 
+            <div id="region-review"></div>
+
             <div class="meta learner-only" id="learner-meta">
               <div>
                 <h3>ชั้นโครงสร้าง (S)</h3>
@@ -200,6 +203,13 @@
             <p class="meta-line learner-only"><span>รหัสโซน</span> <code id="detail-id"></code></p>
           </div>
         </article>
+
+        <section class="session-box expert-only">
+          <h3>ผลตรวจของผู้เชี่ยวชาญ</h3>
+          <p>เลือกบริเวณร่างกายหรือค้นคลังความรู้ แล้วตรวจแต่ละเนื้อหาได้ด้านล่าง ผลตรวจเก็บในเครื่องนี้ ไม่ส่งถึงผู้ดูแลอัตโนมัติ</p>
+          <button type="button" id="export-reviews">ส่งออกผลตรวจทั้งหมด (JSON)</button>
+          <p id="review-export-feedback" role="status"></p>
+        </section>
 
         <section class="session-box ask-box" aria-label="ถามคลังความรู้">
           <form id="ask-form" class="search">

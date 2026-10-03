@@ -40,5 +40,8 @@ jobs:
       - name: JS syntax check
         run: for f in web/js/*.js web/sw.js; do node --check "$f"; done
 
+      - name: Expert review checks
+        run: node scripts/check-reviews.mjs
+
       # audit-region-map.mjs needs the GLB model, which is not committed (see .gitignore),
       # so it is run locally only.
