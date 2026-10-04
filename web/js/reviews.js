@@ -1,3 +1,4 @@
+import { reviewAPI, isReviewDemo } from "./review-api.js";
 const KEY = "body-pain-reviews-v1";
 const LABELS = { reviewed: "ตรวจแล้ว", changes: "ต้องแก้ไข", approved: "รับรองเนื้อหาฉบับนี้" };
 
@@ -50,7 +51,7 @@ export function reviewPanel(target, title, source) {
   };
   const form = el("form", "", "expert-only review-form");
   form.append(el("h4", "ตรวจเนื้อหานี้"));
-  form.append(el("p", "บันทึกเฉพาะเบราว์เซอร์นี้ · ชื่อและคุณวุฒิเป็นข้อมูลที่ผู้ตรวจระบุเอง · ไม่ใช่การรับรองจากหน่วยงาน"));
+  form.append(el("p", "บันทึกในเครื่องใช้ชื่อและคุณวุฒิที่กรอกเอง ส่วนการส่งถึงผู้พัฒนาใช้ชื่อจากบัญชีที่เข้าสู่ระบบ · ผลตรวจเบื้องต้นยังไม่ปิดงานจนกว่าจะตรวจซ้ำในคิว"));
   const fields = {};
   for (const [key, label, multiline, required] of [
     ["reviewer", "ชื่อผู้ตรวจ", false, true],
@@ -80,6 +81,35 @@ export function reviewPanel(target, title, source) {
   const feedback = el("p");
   feedback.setAttribute("role", "status");
   form.append(statusLabel, button, feedback);
+  const send = el("button", isReviewDemo ? "ส่งเข้าคิวเดโมในเบราว์เซอร์นี้" : "ส่งข้อเสนอถึงผู้พัฒนา");
+  send.type = "button";
+  const queue = el("a", "เข้าสู่ระบบ / ติดตามข้อเสนอและคำตอบ");
+  queue.href = isReviewDemo ? "./reviews.html?demo=1" : "./reviews.html";
+  if (isReviewDemo) queue.textContent = "เปิดเดโม / สลับบทบาท / ติดตามข้อเสนอจำลอง";
+  queue.target = "_blank";
+  queue.rel = "noopener";
+  form.append(send, queue);
+  send.addEventListener("click", async () => {
+    const comment = fields.comment.value.trim();
+    const quote = fields.quote.value.trim();
+    const correction = fields.correction.value.trim();
+    if (!comment || (select.value === "changes" && (!quote || !correction))) {
+      feedback.textContent = "ระบุเหตุผล และหากต้องแก้ไขให้ระบุจุดที่ผิดพร้อมข้อเสนอ";
+      return;
+    }
+    send.disabled = true;
+    try {
+      const result = await reviewAPI("tickets", {
+        target, title, snapshot,
+        comment: `ผลตรวจเบื้องต้น: ${LABELS[select.value]}\nจุดที่ตรวจ: ${quote || "ทั้งเนื้อหา"}\nความเห็น: ${comment}\nข้อเสนอ/อ้างอิง: ${correction || "—"}`,
+      });
+      feedback.textContent = isReviewDemo ? `บันทึกเข้าคิวเดโมแล้ว #${result.id} · ไม่ได้ส่งถึงผู้พัฒนาจริง` : `ส่งถึงคิวผู้พัฒนาแล้ว #${result.id} · ติดตามคำตอบได้ที่หน้าคิวตรวจเนื้อหา`;
+      send.textContent = `ส่งแล้ว #${result.id}`;
+    } catch (err) {
+      feedback.textContent = `${err.message} · ยังไม่ยืนยันการส่ง กรุณาตรวจคิวก่อนลองใหม่ ข้อความในฟอร์มยังอยู่`;
+      send.disabled = false;
+    }
+  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!document.body.classList.contains("role-expert")) return;

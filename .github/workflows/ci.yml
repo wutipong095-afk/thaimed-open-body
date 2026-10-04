@@ -43,5 +43,11 @@ jobs:
       - name: Expert review checks
         run: node scripts/check-reviews.mjs
 
+      - name: Static GitHub Pages review demo checks
+        run: node scripts/check-review-demo.mjs
+
+      - name: Shared review workflow and permissions
+        run: python scripts/check-review-workflow.py
+
       # audit-region-map.mjs needs the GLB model, which is not committed (see .gitignore),
       # so it is run locally only.

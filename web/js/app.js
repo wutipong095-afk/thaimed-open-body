@@ -11,6 +11,15 @@ import { bindOfflineControls } from "./offline.js";
 import { KnowledgeIndex, findRedFlags } from "./knowledge.js";
 
 import { reviewPanel, exportReviews } from "./reviews.js";
+import { isReviewDemo } from "./review-api.js";
+
+if (isReviewDemo) {
+  document.getElementById("map-demo-notice").hidden = false;
+  document.querySelectorAll('a[href="./reviews.html"]').forEach((link) => {
+    link.href = "./reviews.html?demo=1";
+    link.textContent = "เดโมผู้เชี่ยวชาญ · คิวตรวจเนื้อหา";
+  });
+}
 
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
 const FOLLOWUPS_URL = new URL("../../data/region-followups.json", import.meta.url);

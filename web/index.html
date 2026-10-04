@@ -30,6 +30,7 @@
         <p class="lede">คลิกบนร่างกาย หรือพิมพ์เป็นภาษาไทย — เพื่อสื่อสารกับผู้รักษา ไม่ใช่การวินิจฉัย</p>
       </div>
       <div class="toggles">
+        <a class="review-entry" href="./reviews.html">หน้าผู้เชี่ยวชาญ · คิวตรวจเนื้อหา</a>
         <div class="view-toggle" role="group" aria-label="บทบาทผู้ใช้">
           <button type="button" class="role-btn is-active" data-role="patient">ผู้ป่วย</button>
           <button type="button" class="role-btn" data-role="learner">ผู้เรียน</button>
@@ -45,6 +46,7 @@
         </div>
       </div>
     </header>
+    <p id="map-demo-notice" class="demo-notice" hidden>โหมดเดโม: ความเห็นเก็บเฉพาะเบราว์เซอร์นี้ ไม่ส่งถึงผู้พัฒนาจริง · เปิดหน้าผู้เชี่ยวชาญเพื่อสลับบทบาทและทดลองตรวจซ้ำ</p>
 
     <main class="layout">
       <section class="stage" aria-label="แผนที่ร่างกาย">
@@ -206,7 +208,8 @@
 
         <section class="session-box expert-only">
           <h3>ผลตรวจของผู้เชี่ยวชาญ</h3>
-          <p>เลือกบริเวณร่างกายหรือค้นคลังความรู้ แล้วตรวจแต่ละเนื้อหาได้ด้านล่าง ผลตรวจเก็บในเครื่องนี้ ไม่ส่งถึงผู้ดูแลอัตโนมัติ</p>
+          <p>เลือกบริเวณร่างกายหรือค้นคลังความรู้ แล้วตรวจแต่ละเนื้อหาได้ด้านล่าง บันทึกในเครื่อง หรือเข้าสู่ระบบเพื่อส่งข้อเสนอถึงผู้พัฒนา</p>
+          <a href="./reviews.html">เข้าสู่ระบบ / คิวตรวจเนื้อหาและคำตอบจากผู้พัฒนา</a>
           <button type="button" id="export-reviews">ส่งออกผลตรวจทั้งหมด (JSON)</button>
           <p id="review-export-feedback" role="status"></p>
         </section>

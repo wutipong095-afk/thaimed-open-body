@@ -62,6 +62,10 @@ python scripts/serve-web.py
 
 ดู [docs/user-guide.md](docs/user-guide.md)
 
+ระบบคิวตรวจเนื้อหา: เปิด `/web/reviews.html` ผ่าน `scripts/serve-web.py` ผู้ดูแลสร้างบัญชีด้วย `scripts/review_store.py` ก่อนใช้งาน ดูขั้นตอนบัญชี การส่งข้อเสนอ การตรวจซ้ำ และการตั้งเซิร์ฟเวอร์ร่วมกันในคู่มือ ไม่มีบัญชีเริ่มต้น
+
+บน GitHub Pages ระบบจะแสดงเดโม static ของ workflow นี้โดยอัตโนมัติ ข้อมูลจำลองอยู่ในเบราว์เซอร์และไม่ส่งถึงผู้พัฒนาจริง
+
 ## ตรวจ map
 
 ```powershell
