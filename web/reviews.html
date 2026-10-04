@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>คิวตรวจเนื้อหา · Body Pain 3D</title>
+  <link rel="stylesheet" href="./vendor/fonts/fonts.css">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <main class="review-workspace">
+    <a id="review-home" href="./">← กลับแผนที่ร่างกาย</a>
+    <h1>คิวตรวจเนื้อหา</h1>
+    <p>ผู้เชี่ยวชาญส่งข้อเสนอ → ผู้พัฒนาแก้ไข → ผู้เชี่ยวชาญตรวจซ้ำและรับรอง</p>
+    <p>เพื่อการศึกษาและการสื่อสารเท่านั้น — ไม่ใช่การวินิจฉัยหรือคำปรึกษาทางการแพทย์</p>
+    <section id="review-demo" class="demo-notice" hidden>
+      <h2>เดโมผู้เชี่ยวชาญและผู้พัฒนา</h2>
+      <p>ข้อมูลจำลองเก็บเฉพาะเบราว์เซอร์นี้ ไม่ส่งถึงผู้พัฒนาจริง ไม่ใช่การรับรองเนื้อหาจริง และไม่ต้องใช้รหัสผ่าน</p>
+      <ol><li>สร้างข้อเสนอตัวอย่าง หรือส่งจากหน้าแผนที่</li><li>สลับเป็นผู้พัฒนา เลือกเริ่มแก้ไข แล้วแก้ข้อความจำลองและส่งตรวจซ้ำ</li><li>สลับกลับเป็นผู้เชี่ยวชาญ ตรวจเนื้อหา แล้วรับรองหรือขอแก้ไขเพิ่มเติม</li></ol>
+      <button type="button" id="demo-expert">ทดลองเป็นผู้เชี่ยวชาญ</button>
+      <button type="button" id="demo-developer">ทดลองเป็นผู้พัฒนา</button>
+      <button type="button" id="demo-seed">สร้างข้อเสนอตัวอย่าง</button>
+    </section>
+    <form id="review-login" class="review-form">
+      <h2>เข้าสู่ระบบทีมตรวจเนื้อหา</h2>
+      <p>ใช้บัญชีที่ผู้ดูแลสร้างให้ การเลือกโหมดผู้เชี่ยวชาญบนแผนที่ไม่ใช่การเข้าสู่ระบบ</p>
+      <label>ชื่อผู้ใช้<input name="username" autocomplete="username" maxlength="100" required></label>
+      <label>รหัสผ่าน<input name="password" type="password" autocomplete="current-password" maxlength="200" required></label>
+      <button type="submit">เข้าสู่ระบบ</button>
+    </form>
+    <section id="review-account" hidden>
+      <p id="review-identity"></p>
+      <button id="review-logout" type="button">ออกจากระบบ</button>
+      <button id="review-refresh" type="button">รีเฟรชคิว</button>
+      <label>สถานะ
+        <select id="review-filter">
+          <option value="all">ทั้งหมด</option>
+          <option value="submitted">ส่งแล้ว</option>
+          <option value="in_progress">กำลังแก้ไข</option>
+          <option value="recheck">รอตรวจซ้ำ</option>
+          <option value="closed">ปิดแล้ว</option>
+        </select>
+      </label>
+      <p>คิวแสดงรายการล่าสุดเมื่อเปิดหน้าหรือกดรีเฟรช ยังไม่มีการแจ้งเตือนทางอีเมล</p>
+    </section>
+    <p id="review-message" role="status" aria-live="polite"></p>
+    <div id="review-tickets"></div>
+  </main>
+  <script type="module" src="./js/review-queue.js"></script>
+</body>
+</html>

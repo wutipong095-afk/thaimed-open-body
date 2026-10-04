@@ -8,6 +8,8 @@ import os
 import re
 import urllib.parse
 import webbrowser
+from http.cookies import SimpleCookie
+import review_store
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -117,6 +119,19 @@ def build_knowledge(region_id: str) -> dict:
     }
 
 
+def review_snapshot(target):
+    kind, _, key = target.partition(':')
+    if kind == 'knowledge':
+        source = next((c for c in load_json(ROOT / 'data/knowledge.json')['chunks'] if c['id'] == key), None)
+    elif kind == 'region':
+        region = next((r for r in load_json(MAP_PATH)['regions'] if r['id'] == key), None)
+        followups = load_json(FOLLOWUPS_PATH)
+        source = {'region': region, 'followups': followups.get('by_id', {}).get(key, followups.get('default', []))} if region else None
+    else:
+        source = None
+    return json.dumps(source, ensure_ascii=False, separators=(',', ':')) if source is not None else None
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
@@ -136,6 +151,10 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+
+        if path.startswith('/api/reviews/'):
+            self._reviews('GET', path)
+            return
 
         if path == "/api/health":
             vault = DEFAULT_VAULT
@@ -166,7 +185,62 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(payload, status)
             return
 
+        # Serve only public application assets; never expose accounts or source files.
+        decoded = urllib.parse.unquote(path)
+        resolved = Path(self.translate_path(path)).resolve()
+        allowed = any(resolved.is_relative_to(ROOT / folder) for folder in ('web', 'data'))
+        if not allowed or any(part.startswith('.') for part in Path(decoded).parts) or resolved.is_dir() and not (resolved / 'index.html').is_file():
+            self.send_error(404)
+            return
         super().do_GET()
+
+    def do_HEAD(self):
+        self.send_error(405)
+
+    def do_POST(self):
+        path = urllib.parse.urlparse(self.path).path
+        if not path.startswith('/api/reviews/'):
+            self._send_json({'ok': False, 'error': 'Not found'}, 404)
+            return
+        self._reviews('POST', path)
+
+    def _reviews(self, method, path):
+        try:
+            data = {}
+            if method == 'POST':
+                expected = os.environ.get('BODY_PAIN_PUBLIC_ORIGIN', f'http://127.0.0.1:{PORT}')
+                origin = self.headers.get('Origin')
+                if origin != expected or self.headers.get('X-Review-Request') != '1':
+                    raise review_store.APIError('Origin rejected', 403)
+                if self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
+                    raise review_store.APIError('JSON required', 415)
+                length = int(self.headers.get('Content-Length', '0'))
+                if length <= 0 or length > 100000:
+                    raise review_store.APIError('Request too large or empty', 413)
+                data = json.loads(self.rfile.read(length))
+                if not isinstance(data, dict):
+                    raise review_store.APIError('JSON object required')
+            cookie = SimpleCookie(self.headers.get('Cookie', ''))
+            token = cookie['review_session'].value if 'review_session' in cookie else ''
+            payload, new_token = review_store.dispatch(method, path, data, token, review_snapshot)
+            if new_token is not None:
+                body = json.dumps(payload).encode()
+                self.send_response(200)
+                secure = '; Secure' if os.environ.get('BODY_PAIN_PUBLIC_ORIGIN', '').startswith('https://') else ''
+                self.send_header('Set-Cookie', f'review_session={new_token}; HttpOnly; SameSite=Strict; Path=/api/reviews; Max-Age={28800 if new_token else 0}{secure}')
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(body)))
+                self.send_header('Cache-Control', 'no-store')
+                self.end_headers()
+                self.wfile.write(body)
+            else:
+                self._send_json(payload)
+        except review_store.APIError as exc:
+            self._send_json({'ok': False, 'error': str(exc)}, exc.status)
+        except (ValueError, TypeError):
+            self._send_json({'ok': False, 'error': 'Invalid request'}, 400)
+        except Exception:
+            self._send_json({'ok': False, 'error': 'ไม่สามารถเข้าถึงระบบตรวจเนื้อหา กรุณาลองอีกครั้ง'}, 500)
 
 
 def main() -> None:

@@ -611,3 +611,25 @@ body.role-patient .learner-only {
     transition: none;
   }
 }
+
+/* Local expert review workflow */
+body:not(.role-expert) .expert-only { display: none; }
+.review-panel { margin-top: 1rem; border-top: 1px solid #b8cfc8; padding-top: .75rem; }
+.review-summary { font-size: .85rem; font-weight: 600; }
+.review-form { display: grid; gap: .65rem; margin-top: .75rem; }
+.review-form label { display: grid; gap: .3rem; font-size: .9rem; }
+.review-form input, .review-form textarea, .review-form select { width: 100%; box-sizing: border-box; font: inherit; padding: .6rem; border: 1px solid #9eb8b0; border-radius: .4rem; background: #fff; color: #183c34; }
+.review-form textarea { min-height: 5rem; resize: vertical; }
+.review-form p, .review-panel li { font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-panel li { margin-bottom: .75rem; }
+.review-workspace { max-width: 960px; padding: 24px; margin: auto; }
+.review-workspace [hidden] { display: none !important; }
+.review-ticket { background: white; color: #183c34; border: 1px solid #b8cfc8; border-radius: 12px; padding: 20px; margin-top: 20px; }
+.review-ticket pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 420px; overflow: auto; background: #f0f6f3; padding: 12px; }
+.review-ticket li { white-space: pre-wrap; overflow-wrap: anywhere; margin-block: 12px; }
+.review-workspace button, .review-panel button { min-height: 44px; cursor: pointer; }
+.review-workspace button:disabled, .review-panel button:disabled { cursor: default; opacity: .6; }
+.demo-notice { padding: 18px; border: 1px solid #88c5b4; background: #eaf8f2; color: #183c34; border-radius: 12px; margin-block: 16px; }
+.demo-notice button { margin: 4px; }
+.demo-notice[hidden] { display: none; }
+.review-entry { font-weight: 700; padding: 8px; }

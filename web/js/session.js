@@ -12,7 +12,7 @@ export function loadSession() {
     if (!raw) return { role: "patient", items: [] };
     const data = JSON.parse(raw);
     return {
-      role: data.role === "learner" ? "learner" : "patient",
+      role: ["learner", "expert"].includes(data.role) ? data.role : "patient",
       items: Array.isArray(data.items) ? data.items.slice(0, MAX_ITEMS) : [],
     };
   } catch {

@@ -10,6 +10,17 @@ import {
 import { bindOfflineControls } from "./offline.js";
 import { KnowledgeIndex, findRedFlags } from "./knowledge.js";
 
+import { reviewPanel, exportReviews } from "./reviews.js";
+import { isReviewDemo } from "./review-api.js";
+
+if (isReviewDemo) {
+  document.getElementById("map-demo-notice").hidden = false;
+  document.querySelectorAll('a[href="./reviews.html"]').forEach((link) => {
+    link.href = "./reviews.html?demo=1";
+    link.textContent = "เดโมผู้เชี่ยวชาญ · คิวตรวจเนื้อหา";
+  });
+}
+
 const MAP_URL = new URL("../../data/body-pain-map.json", import.meta.url);
 const FOLLOWUPS_URL = new URL("../../data/region-followups.json", import.meta.url);
 /** Public knowledge base, built from knowledge/*.md by scripts/build-knowledge.py */
@@ -107,11 +118,14 @@ function renderSessionList() {
 }
 
 function setRole(role) {
-  session.role = role === "learner" ? "learner" : "patient";
+  session.role = ["learner", "expert"].includes(role) ? role : "patient";
   document.body.classList.toggle("role-patient", session.role === "patient");
   document.body.classList.toggle("role-learner", session.role === "learner");
+  document.body.classList.toggle("role-expert", session.role === "expert");
+  if (activeId) els.en.textContent = session.role !== "patient" ? regionsById.get(activeId)?.name_en || "" : "";
   document.querySelectorAll(".role-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.role === session.role);
+    btn.setAttribute("aria-pressed", String(btn.dataset.role === session.role));
   });
   persistSession();
 }
@@ -195,7 +209,7 @@ function knowledgeCard(chunk) {
     a.textContent = "เปิดแหล่งที่มา";
     src.append(" · ", a);
   }
-  card.append(h, meta, p, src);
+  card.append(h, meta, p, src, reviewPanel(`knowledge:${chunk.id}`, `${chunk.title} · ${chunk.section}`, chunk));
   return card;
 }
 
@@ -249,7 +263,7 @@ function showRegion(regionId, options = {}) {
   els.placeholder.hidden = true;
   els.detailBody.hidden = false;
   els.title.textContent = region.name_th;
-  els.en.textContent = session.role === "learner" ? region.name_en || "" : "";
+  els.en.textContent = session.role !== "patient" ? region.name_en || "" : "";
   let muscleLabel = null;
   if (options.muscleName) {
     muscleLabel = formatMuscleLabelThEn(options.muscleName, options.side || "mid");
@@ -279,6 +293,7 @@ function showRegion(regionId, options = {}) {
   fillList(els.followups, followupsFor(region.id), "—");
   els.vault.innerHTML = "";
   renderRegionKnowledge(region.id);
+  document.getElementById("region-review").replaceChildren(reviewPanel(`region:${region.id}`, region.name_th, { region, followups: followupsFor(region.id) }));
 
   if (!options.skipSession) {
     const label = muscleLabel
@@ -585,3 +600,9 @@ async function main() {
 }
 
 main();
+
+ document.getElementById("export-reviews").addEventListener("click", () => {
+  const feedback = document.getElementById("review-export-feedback");
+  try { feedback.textContent = exportReviews() ? "ส่งออกผลตรวจแล้ว" : "ยังไม่มีผลตรวจให้ส่งออก"; }
+  catch { feedback.textContent = "อ่านผลตรวจไม่ได้ จึงยังส่งออกไม่ได้"; }
+});

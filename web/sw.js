@@ -1,7 +1,7 @@
 /* Offline-first shell: the whole app runs from this device after the first visit.
  * The 3D model (~23 MB) is cached separately, only when the user asks for it
  * (see js/offline.js). Bump SHELL_CACHE whenever any file in ASSETS changes. */
-const SHELL_CACHE = "body-pain-shell-v4";
+const SHELL_CACHE = "body-pain-shell-v7";
 const MODEL_CACHE = "body-pain-model-v1";
 const KEEP = [SHELL_CACHE, MODEL_CACHE];
 
@@ -9,6 +9,10 @@ const KEEP = [SHELL_CACHE, MODEL_CACHE];
 const ASSETS = [
   "./",
   "./index.html",
+  "./reviews.html",
+  "./js/review-api.js",
+  "./js/review-demo.js",
+  "./js/review-queue.js",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./css/styles.css",
@@ -20,6 +24,7 @@ const ASSETS = [
   "./js/offline.js",
   "./js/resolve.js",
   "./js/session.js",
+  "./js/reviews.js",
   "./vendor/three/build/three.module.js",
   "./vendor/three/build/three.core.js",
   "./vendor/three/addons/controls/OrbitControls.js",
